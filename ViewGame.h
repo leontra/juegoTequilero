@@ -13,15 +13,25 @@
 
 #include "cocos2d.h"
 
-//#include "Player.cpp"
+#include "Player.cpp"
 
 #include "BoxCollision.h"
 
 #include "Platform.h"
 
+#include "Map.h"
+
+#include "Resources.h"
+
+#include "CollisionsPoints.h"
+
+
 class ViewGame: public cocos2d::Layer
 {
 private:
+    
+    const float _kPixelsPerMeter = 32.0f;
+    
     int iPx, iPy, iPwidth, iPheight, iPG, iPvx, iPvy;
     
     bool bHorizontalRight, bHorizontalLeft, bVerticalPlus, bVerticalMinus;
@@ -30,12 +40,25 @@ private:
     
     void collisions();
     
+    cocos2d::TMXTiledMap* _tileMap;
+    
+    MapWorld* _oMap;
+    
+    Resource* _oResource;
+    
+    CollisionsPoints* _oCollisionsPoints;
+    
+    vector* _piResourcePoints;
+    
+    vector* _piCollisionPoints;
+    
 public:
     
-    ViewGame();
-    virtual ~ViewGame();
+    ViewGame ();
     
-    virtual bool init ();
+    ~ViewGame ();
+    
+    bool init ();
     
     void update(float dt);
     

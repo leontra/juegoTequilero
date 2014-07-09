@@ -16,7 +16,8 @@
 
 USING_NS_CC;
 
-ViewGame::ViewGame()
+ViewGame::ViewGame(): _piResourcePoints (0),
+                      _piCollisionPoints (0)
 {
     iPx = 0;
     iPy = 0;
@@ -29,6 +30,12 @@ ViewGame::ViewGame()
     bHorizontalLeft = 0;
     bVerticalMinus = 0;
     bVerticalPlus = 0;
+    
+    _oMap = new MapWorld ();
+    
+    _oResource = new Resource ();
+    
+    _oCollisionsPoints = new CollisionsPoints ();
     
     platformArray[ 0 ] = new Platform;
     
@@ -45,26 +52,39 @@ ViewGame::~ViewGame()
 
 bool ViewGame::init ()
 {
-    
     if( !Layer :: init() )
         return false;
     
     Size visibleSize = Director::getInstance () -> getVisibleSize ();
+    
     //Point origin = Director::getInstance () -> getVisibleOrigin ();
     
-    auto layer = this;
+    //auto layer = this;
     
-    platformArray[ 0 ] -> addPlatform( layer,  0,  0,  0,  visibleSize.width,  120  );
+    //platformArray[ 0 ] -> addPlatform( layer,  0,  0,  0,  visibleSize.width,  120  );
+    //platformArray[ 1 ] -> addPlatform( layer,  0,  130,  120,  visibleSize.width/10,  50  );
+    //platformArray[ 2 ] -> addPlatform( layer,  0,  300,  180,  visibleSize.width/12,  30  );
     
-    platformArray[ 1 ] -> addPlatform( layer,  0,  130,  120,  visibleSize.width/10,  50  );
+    this -> schedule( schedule_selector ( ViewGame::update ) );
     
-    platformArray[ 2 ] -> addPlatform( layer,  0,  300,  180,  visibleSize.width/12,  30  );
+    //Asignar xml
+    this -> _tileMap = _oMap->mapTileXML ();
     
-    this->schedule( schedule_selector ( ViewGame::update ) );
-
+    _piResourcePoints = _oResource->initResources ( *_tileMap );
+    
+    printf ( "el numero es %d \n", _piResourcePoints [0].x );
+    
+    _piCollisionPoints = _oCollisionsPoints->initCollisionPoints( *_tileMap );
+    
+    printf ( "el numero de colision es %d \n", _piCollisionPoints [0].y );
+    
+    _tileMap->setScale(1);
+    
+    addChild(_tileMap, 0, 0);
     
     return 1;
 }
+    
 
 void ViewGame::update(float dt)
 {
@@ -77,9 +97,9 @@ void ViewGame::checkForCollisions()
     
    // for ( int i = 0; i < 3; i ++ )
     //{
-            BoxCollision :: checkCollision( platformArray[ 1 ] -> platform, iPx, iPy, iPvx, iPvy, iPwidth, iPheight, iPG, bHorizontalLeft, bHorizontalRight, bVerticalPlus, bVerticalMinus );
+            //BoxCollision :: checkCollision( platformArray[ 1 ] -> platform, iPx, iPy, iPvx, iPvy, iPwidth, iPheight, iPG, bHorizontalLeft, bHorizontalRight, bVerticalPlus, bVerticalMinus );
             
-            this -> collisions();
+            //this -> collisions();
             
       //      if( bHorizontalLeft || bHorizontalRight || bVerticalMinus || bVerticalPlus )
         //        break;
