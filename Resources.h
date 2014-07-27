@@ -1,31 +1,30 @@
 //
 //  Resources.h
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Administrador on 7/6/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __DemoInduccion__Resources__
-#define __DemoInduccion__Resources__
+#ifndef __JuegoTequilero__Resources__
+#define __JuegoTequilero__Resources__
 
 #include <iostream>
 
-#include "Vector.h"
+#include "ResourceObject.h"
 
 #include "cocos2d.h"
 
-class Resource
+class Resource: public cocos2d::Layer
 {
 private:
+    int _iNRecursos;
     
-    vector* piMapResourcesPoints;
+    objectResource* piMapResourcesPoints;
     
     void initArray ();
     
-    void deleteArray ();
-    
-    vector*  initVectorWith ( int X, int Y );
+    objectResource*  initVectorWith ( int X, int Y, int width, int height );
     
 public:
     
@@ -33,7 +32,15 @@ public:
     
     ~Resource ();
     
-    vector* initResources (cocos2d::TMXTiledMap& _tileMap);
+    void deleteArray ();
+    
+    int getNRecursos ();
+    
+    objectResource* initResources (cocos2d::TMXTiledMap& _tileMap);
+    
+    
+    bool init ();
 };
 
-#endif /* defined(__DemoInduccion__Resources__) */
+
+#endif /* defined(__JuegoTequilero__Resources__) */

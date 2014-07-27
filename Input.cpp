@@ -1,201 +1,324 @@
 //
-//  inputs.cpp
-//  Game Prototype
+//  Input.cpp
+//  JuegoTequilero
 //
-//  Created by Max on 4/14/14.
+//  Created by Max on 7/11/14.
 //
 //
 
 #include "Input.h"
 
-#include <CCGeometry.h>
-
 #define COCOS2D_DEBUG 1
 
 USING_NS_CC;
 
+static bool _bLeft = 0;
+
+static bool _bRight = 0;
+
+static bool _bAction = 0;
+
+static bool _bJump = 0;
 
 
-bool Input::bAction = false;
 
-bool Input::bLeft = false;
+Input::Input (): fDivisionHeight (0),
+                  fDivisionWidth (0),
+                  fWidth (0),
+                  _iButtonHeight (0),
+                  _iButtonWidth (0),
+                  _bLastAction (0),
+                  _bLastJump (0),
+                  _bLastLeft (0),
+                  _bLastRight (0),
+                  _iJumpTouch (0)
+{
+}
 
-bool Input::bRight = false;
-
-bool Input::bJump = false;
-
-
+Input::~Input ()
+{
+}
 
 
 bool Input::init ()
 {
+    if (!Layer::init())
+        return 0;
     
+    Size visibleSize = Director::getInstance ()->getVisibleSize ();
     
-    if( ! Layer::init() )
-        return false;
+    //Hacer translucido el fondo del layer del input
+    this->setOpacity (0);
     
+    this->initInput (visibleSize);
     
-    Size visibleSize = Director::getInstance () -> getVisibleSize ();
-    //Point origin = Director::getInstance () -> getVisibleOrigin ();
-    
-    
-    //this -> setScale(0.5, 0.5);
-    
-    this -> setColor ( Color3B( 255, 0, 0 ) );
-    
-    this -> setOpacity ( 0 );
-    
-    //auto requiredPortion = CCRectMake(0, 0, 300, 300);
-    
-    
-    
-    fDivisionWidth = visibleSize.width / 3;
-    
-    fDivisionHeight = visibleSize.height / 2;
-    
-    fWidth = visibleSize.width;
-    
-    
-    
-    auto sButtonLeft = Sprite::create ( "button.png" );
-    sButtonLeft -> setPosition ( 40, 60 );
-    
-    auto labelLeft = LabelTTF::create ( "L",  "Helvetica",  20 );
-    labelLeft -> setPosition ( 40,  60 );
-    labelLeft -> setColor ( Color3B ( 33, 33, 33) );
-    
-    
-    auto sButtonRight = Sprite::create ( "button.png" );
-    sButtonRight -> setPosition ( fWidth - 40,  60 );
-
-    auto labelRight = LabelTTF::create ( "R",  "Helvetica",  20 );
-    labelRight -> setPosition ( fWidth - 40,  60);
-    labelRight -> setColor ( Color3B ( 33, 33, 33) );
-    
-    this -> addChild ( sButtonLeft );
-    this -> addChild ( sButtonRight );
-    this -> addChild ( labelLeft );
-    this -> addChild ( labelRight );
-    
-    auto listener1 = EventListenerTouchOneByOne::create ();
-    listener1 -> setSwallowTouches( true );
-    listener1 -> onTouchBegan = [ & ]( cocos2d::Touch * touch,  cocos2d::Event * event )
-    {
-        
-        
-        Point locationInNode = touch -> getLocation ();
-        
-        
-        //Rect rect = Rect(0, 0, visibleSize.width/3 + origin.x, visibleSize.height/2 + origin.y );
-        
-        
-        Rect rectAction = Rect( 0, 0, fWidth, fDivisionHeight );
-        Rect rectLeft = Rect( 10, 30, 60, 60 );
-        Rect rectRight = Rect( fWidth - 70, 30, 60, 60 );
-        Rect rectJump = Rect( 0, fDivisionHeight, fWidth, fDivisionHeight );
-    
-        
-        //rectLeft -> Color4B(33, 33, 33, 33);
-        
-        
-        if ( rectLeft.containsPoint ( locationInNode ) )
-            bLeft = true;
-        
-        else if ( rectRight.containsPoint ( locationInNode ) )
-            bRight = true;
-        
-        else if ( rectJump.containsPoint ( locationInNode ) )
-            bJump = true;
-        
-        if ( rectAction.containsPoint ( locationInNode ) )
-            bAction = true;
-        
-        
-        
-        
-        return true;
-        
-    }; // onTouchBegan
-    
-    
-    
-    listener1 -> onTouchEnded = [ & ]( cocos2d::Touch * touch,  cocos2d::Event * event )
-    {
-        
-        
-        if( bLeft )
-            bLeft = false;
-        
-        if( bRight )
-            bRight = false;
-        
-        if( bAction )
-            bAction = false;
-        
-        if( bJump )
-            bJump = false;
-        
-        
-    }; //onTouchEnded
-    
-    
-    
-    //_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, sButtonLeft);
-    
-    _eventDispatcher -> addEventListenerWithFixedPriority(listener1, 31);
-    
-    
-    
-    return true;
-    
-    
+    return 1;
 } // bool init
 
-
-bool Input::touchLeft( )
+void Input::initInput (cocos2d::Size visibleSize)
 {
+    //Inicializar las variables de la clase
+    this->initVariables (visibleSize);
     
-    if( !bLeft )
-        return false;
+    //Inicializar las variables para crear los botones de movimiento
+    int iButtonWidthPadding = 30;
+    int iButtonHeightPadding = 30;
     
-    return true;
+    //Inicializar los sprites del input de movimiento
+    this->initButtonsSprites (iButtonWidthPadding, iButtonHeightPadding);
     
+    //Inicializar el input del player
+    auto listenerInputPlayer = this->getInputListener ();
+    
+    //Inicializar los diferentes tipos de eventos del input
+    this->beganTouch (listenerInputPlayer);
+    this->movedTouch (listenerInputPlayer);
+    this->endedTouch (listenerInputPlayer);
+    
+    //Agregar el input a los eventos del juego
+    _eventDispatcher->addEventListenerWithFixedPriority (listenerInputPlayer, 2);
+}
+
+void Input::initVariables (Size visibleSize)
+{
+    fDivisionWidth = visibleSize.width / 3;
+    fDivisionHeight = visibleSize.height / 2;
+    fWidth = visibleSize.width;
+    _iButtonWidth = 130;
+    _iButtonHeight = 120;
+}
+
+void Input::initButtonsSprites (int& iButtonWidthPadding, int& iButtonHeightPadding)
+{
+    this->addChild (this->getLeftButton (iButtonWidthPadding, iButtonHeightPadding));
+    this->addChild (this->getRightButton (iButtonWidthPadding, iButtonHeightPadding));
+}
+
+Sprite* Input::getLeftButton (int& iButtonWidthPadding, int& iButtonHeightPadding)
+{
+    auto sButtonLeft = Sprite::create ("button.png");
+    sButtonLeft->setOpacity (150);
+    sButtonLeft->setAnchorPoint (Point (0, 0));
+    sButtonLeft->setContentSize (Size (200, 200));
+    sButtonLeft->setPosition (iButtonWidthPadding, iButtonHeightPadding);
+    
+    return sButtonLeft;
+}
+
+Sprite* Input::getRightButton (int& iButtonWidthPadding, int& iButtonHeightPadding)
+{
+    auto sButtonRight = Sprite::create ("button.png");
+    sButtonRight->setOpacity (150);
+    sButtonRight->setAnchorPoint (Point (0, 0));
+    sButtonRight->setPosition (fWidth - sButtonRight->getContentSize().width - iButtonWidthPadding,  iButtonHeightPadding);
+    
+    return sButtonRight;
+}
+
+EventListenerTouchOneByOne* Input::getInputListener ()
+{
+    auto listenerInputPlayer = EventListenerTouchOneByOne::create ();
+    
+    listenerInputPlayer->setSwallowTouches (0);
+    
+    return listenerInputPlayer;
+}
+
+void Input::touchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    this->beganTouchForJump (listenerInput);
+    this->movedTouchForJump (listenerInput);
+    this->endedTouchForJump (listenerInput);
+}
+
+void Input::beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
+    {
+        Point locationInNode = touch->getLocation ();
+        
+        Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
+        
+        touch->getID ();
+        
+        if (rectJump.containsPoint (locationInNode))
+            _iJumpTouch = locationInNode.y;
+        
+        return 1;
+        
+    }; // onTouchBegan
+}
+
+void Input::movedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    //Revisar si movio el dedo sin despegarlo de la pantalla
+    listenerInput->onTouchMoved = [&] (cocos2d::Touch* touch,  cocos2d::Event* event)
+    {
+        Point locationInNode = touch -> getLocation ();
+        
+        Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
+        
+        if (locationInNode.y > _iJumpTouch + 20 && !_bLastJump && rectJump.containsPoint (locationInNode))
+        {
+            _bJump = 1;
+            _bLastJump = 1;
+        }
+    }; //Touch Moved
+}
+
+void Input::endedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    listenerInput->onTouchEnded = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
+    {
+        Point locationInNode = touch -> getLocation ();
+		
+        Rect rectJump = Rect(0, fDivisionHeight, fWidth, fDivisionHeight);
+        
+        if (_bLastJump)
+        {
+            _bLastJump = 0;
+            _iJumpTouch = 0;
+        }
+    }; //onTouchEnded
+}
+
+void Input::beganTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
+    {
+        Point locationInNode = touch->getLocation ();
+        
+        this->initilizeBeganTouch (locationInNode, touch);
+        
+        return 1;
+        
+    }; // onTouchBegan
+}
+
+void Input::initilizeBeganTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch)
+{
+    // Rect rectAction = Rect ( 0, 0, fWidth, fDivisionHeight);
+    Rect rectLeft = Rect (0, 0, _iButtonWidth, _iButtonHeight);
+    Rect rectRight = Rect (fWidth - _iButtonWidth, 0, _iButtonWidth, _iButtonHeight);
+    Rect rectJump = Rect(0, 0, fWidth, fDivisionHeight * 2);
+    
+    touch->getID ();
+    
+    if (rectLeft.containsPoint (locationInNode))
+    {
+        _bLeft = 1;
+        touch->_ID = 1;
+    }
+    else
+    if (rectRight.containsPoint (locationInNode))
+    {
+        _bRight = 1;
+        touch->_ID = 2;
+    }
+    else
+    if (rectJump.containsPoint (locationInNode))
+    {
+        _iJumpTouch = locationInNode.y;
+        touch->_ID = 3;
+    }
+}
+
+void Input::endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    listenerInput->onTouchEnded = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
+    {
+        Point locationInNode = touch -> getLocation ();
+        
+        int iTouchID = touch->_ID;
+        
+        if (iTouchID == 1)
+            _bLeft = 0;
+        
+        if (iTouchID == 2)
+            _bRight = 0;
+        
+        if (iTouchID == 3)
+        {
+            _bLastAction = 0;
+            _bJump = 0;
+        }
+    }; //onTouchEnded
+}
+
+void Input::movedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
+{
+    //Revisar si movio el dedo sin despegarlo de la pantalla
+    listenerInput->onTouchMoved = [&] (cocos2d::Touch* touch,  cocos2d::Event* event)
+    {
+        Point locationInNode = touch -> getLocation ();
+        
+        this->doMovedTouch (locationInNode, touch);
+        
+    }; //Touch Moved
+}
+
+void Input::doMovedTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch)
+{
+    Rect rectLeft = Rect (0, 0, _iButtonWidth, _iButtonHeight);
+    Rect rectRight = Rect (fWidth - _iButtonWidth, 0, _iButtonWidth, _iButtonHeight);
+    
+    int iTouchID = touch->_ID;
+    
+    if (iTouchID == 1 && !rectLeft.containsPoint (locationInNode))
+        _bLeft = 0;
+    
+    if (iTouchID == 2 && !rectRight.containsPoint (locationInNode))
+        _bRight = 0;
+    
+    if (iTouchID == 3 && !_bLastAction)
+        this->testJump (locationInNode);
+}
+
+void Input::testJump (cocos2d::Point& locationInNode)
+{
+    Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
+    
+    if (locationInNode.y > _iJumpTouch + 25)
+    {
+        _bLastAction = 1;
+        _bJump = 1;
+    }
+}
+
+void Input::checkForTouchMoved (bool& bTouch, bool& bLastTouch)
+{
+    if (bLastTouch && bTouch)
+    {
+        bLastTouch = 0;
+        bTouch = 0;
+    }
+}
+
+bool Input::touchLeft ()
+{
+    return _bLeft;
 } // bool touchLeft
 
 
-bool Input::touchRight( )
+bool Input::touchRight ()
 {
-    
-    if( !bRight )
-        return false;
-    
-    return true;
+    return _bRight;
     
 } // bool touchRight
 
 
-bool Input::touchAction( )
+bool Input::touchAction ()
 {
-    
-    
-    
-    if( !bAction )
-        return false;
-    
-    
-    return true;
-    
+    return _bAction;
 } // bool touchAction
 
 
-bool Input::touchJump( )
+bool Input::touchJump ()
 {
-    
-    if( !bJump )
-        return false;
-    
-    return true;
-    
+    if (_bJump)
+    {
+        _bJump = 0;
+        return 1;
+    }
+    return 0;
 } // bool touchJump
-
-

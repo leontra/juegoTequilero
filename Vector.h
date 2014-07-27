@@ -1,20 +1,22 @@
 //
 //  Vector.h
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Administrador on 7/4/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef DemoInduccion_Vector_h
-#define DemoInduccion_Vector_h
+#ifndef JuegoTequilero_Vector_h
+#define JuegoTequilero_Vector_h
 
-struct Vector
+struct _Vector
 {
     int x;
     int y;
+    int iActivo;
+    int iToB;
 };
 
-typedef Vector vector;
+typedef _Vector vector;
 
 #endif

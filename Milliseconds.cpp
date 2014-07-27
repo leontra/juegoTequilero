@@ -1,8 +1,8 @@
 //
 //  Milliseconds.cpp
-//  gamePrototype
+//  JuegoTequilero
 //
-//  Created by Max on 4/20/14.
+//  Created by Max on 7/11/14.
 //
 //
 
@@ -32,29 +32,21 @@ float Milliseconds::fGetMilliCount ( )
 bool Milliseconds::getSecCount ()
 {
     
-    if( ! bSeconds )
+    if( !bSeconds )
     {
-        
         fMillisStart = Milliseconds::fGetMilliCount ();
-        
-        bSeconds = true;
-        
+        bSeconds = 1;
     }
     
     if( ( fGetMilliCount () - fMillisStart ) >= 1000 )
     {
-        
-        bSeconds = false;
-        
+        bSeconds = 0;
         fMillisCount ++;
         
-        return true;
-        
+        return 1;
     }
     
-    
     return false;
-    
 }
 
 float Milliseconds::getCount ()

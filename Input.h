@@ -1,19 +1,17 @@
 //
-//
 //  Input.h
-//  Game Prototype
+//  JuegoTequilero
 //
-//  Created by Max on 4/14/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __gameTest00__inputs__
-#define __gameTest00__inputs__
+#ifndef __JuegoTequilero__Input__
+#define __JuegoTequilero__Input__
 
 #include <iostream>
 
 #include "cocos2d.h"
-
 
 
 class Input : public cocos2d::Layer
@@ -22,15 +20,53 @@ class Input : public cocos2d::Layer
     
 private:
     
-    static bool bLeft;
+    int _iButtonWidth;
     
-    static bool bRight;
+    int _iButtonHeight;
     
-    static bool bAction;
+    bool _bLastJump;
     
-    static bool bJump;
+    bool _bLastAction;
     
+    bool _bLastLeft;
     
+    bool _bLastRight;
+    
+    int _iJumpTouch;
+    
+    void initInput (cocos2d::Size visibleSize);
+    
+    void initVariables (cocos2d::Size visibleSize);
+    
+    cocos2d::EventListenerTouchOneByOne* getInputListener ();
+    
+    cocos2d::Sprite* getLeftButton (int& iButtonWidthPadding, int& iButtonHeightPadding);
+    
+    cocos2d::Sprite* getRightButton (int& iButtonWidthPadding, int& iButtonHeightPadding);
+    
+    void touchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void initButtonsSprites (int& iButtonWidthPadding, int& iButtonHeightPadding);
+    
+    void beganTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void endedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void movedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void movedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    
+    void checkForTouchMoved (bool& bTouch, bool& bLastTouch);
+    
+    void initilizeBeganTouch (cocos2d::Point& point, cocos2d::Touch* touch);
+    
+    void doMovedTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch);
+    
+    void testJump (cocos2d::Point& locationInNode);
     
 public:
     
@@ -44,31 +80,18 @@ public:
     
     CREATE_FUNC(Input);
     
-    static bool touchLeft( );
+    bool touchLeft ();
     
-    static bool touchRight( );
+    bool touchRight ();
     
-    static bool touchAction( );
+    bool touchAction ();
     
-    static bool touchJump( );
+    bool touchJump ();
     
-    Input ()
-    {
-        
-        fDivisionWidth = 0;
-        
-        fDivisionHeight = 0;
-        
-        fWidth = 0;
-        
-    }
+    Input ();
     
-    ~Input ()
-    {
-        
-        
-    }
+    ~Input ();
     
 };
 
-#endif /* defined(__gameTest00__inputs__) */
+#endif /* defined(__JuegoTequilero__Input__) */

@@ -1,13 +1,13 @@
 //
 //  Player.h
-//  Game Prototype
+//  JuegoTequilero
 //
-//  Created by Max on 4/14/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __gameTest00__Player__
-#define __gameTest00__Player__
+#ifndef __JuegoTequilero__Player__
+#define __JuegoTequilero__Player__
 
 #include <iostream>
 
@@ -15,118 +15,125 @@
 
 #include "cocos2d.h"
 
+#include "CollisionsPoints.h"
+
+#include "BoxCollision.h"
+
+#include "CreateAnim.h"
+
 //#include "Milliseconds.h"
 
 
-
-
-class Player :  public cocos2d::Layer
+class Player: public cocos2d::Layer
 {
     
 private:
     
-    void update ( float dt );
+    int* _iX;
+    int* _iY;
+    int* _iVy;
     
+    int _iVx;
+    int _iPlayerWidth;
+    int _iPlayerHeight;
+    
+    int _iMap;
+    int _iWidthTile;
+    int _iHeightTile;
+    int _iMapWidth;
+    
+    int _bFlip;
+    
+    int _iAnimState;
+    
+	int _iFallx;
+	int _iFally;
+    
+    float _fGravedad;
+    float _fG;
+    float _fAy;
+    float _fTiempo;
+    
+	float _fcronometro;
+    
+    bool _bLeftTouch;
+    bool _bRightTouch;
+    bool _bJumpTouch;
+    bool _fbJump;
+    bool _bActionTouch;
+    
+    int* _bCollisionX;
+    int* _bCollisionY;
+    int* _bTouchFloor;
+    int* _bTouchUp;
+    
+    int _iMapIndex;
+    
+    CollisionsPoints* _oCollisionsPoints;
+    
+    BoxCollision* _oBoxCollisions;
+    
+    Input* _oInput;
+    
+    CreateAnim* _oCreateAnim;
+    
+    vector* _piCollisionPoints;
+    vector* _piTransparentCollisionPoints;
+    
+    cocos2d::Sprite* _spritePlayer;
+    
+    void pintarPlayer (float dt);
     void input ();
-    
     void resetValues();
-    
-    void updateValues ();
-    
     void movement ();
-    
-    void collision ();
-    
+    void resetJumpValues ();
     void jump ();
+    void walk ();
+    void checkForJump ();
+    void constraint ();
+    void constraintXLeft ();
+    void constraintXRight ();
+    void constraintY ();
+    void checkForCollisions ();
+    void sumGravity ();
+    void checkForFlip ();
     
-    void walk();
+    void initPlayer (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta);
+    void initObjects (cocos2d::TMXTiledMap& _tileMap);
+    void initPosition (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta);
+    void setInitialValues (int posX, int posY);
     
-    void checkForJump();
+    void updatePlayerSprite (int& posX, int& posY);
     
-    void constraint();
+    void resetPosition ();
+    void destroyObjects ();
     
-    void gravity();
+    void doFlipWith (int& bFlip);
+    void setInitScale (std::string sAparicion);
     
-    void checkForCollisions();
+    void checkForStateAnim ();
+    void runAnimateActions ();
     
-    void setValuesForIntsStaticMembers();
-    void setValuesForBoolStaticMembers();
-    
-    float fG;
-    
-    float fTiempo;
-    
-    float fX;
-    
-    float fY;
-    
-    float fVx;
-    
-    int fVy;
-    
-    float fAy;
-    
-    int iPlayerWidth;
-    
-    int iPlayerHeight;
-    
-    bool bEntro;
-    
-    bool bLeftTouch;
-    
-    bool bRightTouch;
-    
-    bool bTouchAction;
-    
-    bool fbJump;
-    
-    bool bJump;
-    
-    bool bGravity;
-    
-    bool bCustomGravity;
-    
-    bool bHorizontalLeft;
-    
-    bool bHorizontalRight;
-    
-    bool bVerticalPlus;
-    
-    bool bVerticalMinus;
-    
-    bool bTouchFloor;
-    
-    static int *iX;
-    static int *iY;
-    static int *iWidth;
-    static int *iHeight;
-    static int *iG;
-    static int *iVx;
-    static int *iVy;
-    static bool *bbTouchFloor;
-    static bool *bbVerticalPlus;
-    static bool *bbVerticalMinus;
-    static bool *bbHorizontalLeft;
-    static bool *bbHorizontalRight;
-    
-    cocos2d::Sprite * player;
+	void cronometro();
     
 public:
     
-    virtual bool init ();
+    bool init (cocos2d::TMXTiledMap& _tileMap, float& fGravedad, std::string sPuerta, int& iMap);
     
-    static void getAllValues( int &_iX, int &_iY, int &_iWidth, int &_iHeight, int &_iG, int &_iVx, int &_iVy);
+    void destroyPlayer ();
     
-    static void changeBoolAt( bool _bool,  int index);
+    void getAllValues (int& iX, int& iY, int& iWidth, int& iHeight, bool& bActionTouch, int& iWidthTile);
     
-    CREATE_FUNC( Player );
+    int* getPosX ();
+    
+    int* getPosY ();
     
     Player ();
     
-    virtual ~Player ();
+    ~Player ();
+    
+    //CREATE_FUNC( Player );
     
 };
 
-
-
-#endif /* defined(__gameTest00__Player__) */
+#endif /* defined(__JuegoTequilero__Player__) */

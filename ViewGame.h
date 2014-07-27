@@ -1,56 +1,80 @@
 //
 //  ViewGame.h
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Max on 5/11/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __DemoInduccion__ViewGame__
-#define __DemoInduccion__ViewGame__
+#ifndef __JuegoTequilero__ViewGame__
+#define __JuegoTequilero__ViewGame__
 
 #include <iostream>
 
 #include "cocos2d.h"
 
-#include "Player.cpp"
+#include "Player.h"
 
-#include "BoxCollision.h"
-
-#include "Platform.h"
-
-#include "Map.h"
+#include "MapWorld.h"
 
 #include "Resources.h"
 
-#include "CollisionsPoints.h"
+#include "Puertas.h"
+
+#include "PuertasBoxCollision.h"
+
+#include "DrawRecursos.h"
+
+#include "BarraMision.h"
+
+#include "SimpleAudioEngine.h"
 
 
 class ViewGame: public cocos2d::Layer
 {
 private:
     
-    const float _kPixelsPerMeter = 32.0f;
+    bool _bfStart;
+    bool _bChangeScene;
+    bool _bActionTouch;
     
-    int iPx, iPy, iPwidth, iPheight, iPG, iPvx, iPvy;
+    CocosDenshion::SimpleAudioEngine* _oAudioEngine;
     
-    bool bHorizontalRight, bHorizontalLeft, bVerticalPlus, bVerticalMinus;
+    int* _bInicio;
     
-    void checkForCollisions();
+    int _iMapIndex;
+    int _iPx;
+    int _iPy;
+    int _iPWidth;
+    int _iPHeight;
+    int _iAvanzoRetrocedio;
+    int _iMapWidth;
     
-    void collisions();
+    std::string _sPuerta;
+    
+    MapWorld* _oMap;
+    Resource* _oResource;
+    Player* _oPlayer;
+    Puertas* _oPuertas;
+    PuertasBoxCollision* _oPuertasBoxCollision;
+    DrawRecursos* _oDrawRecursos;
+    BarraMision* _oBarraMision;
+    
+    objectResource* _piResourcePoints;
+    objectResource* _orPuertasPoints;
     
     cocos2d::TMXTiledMap* _tileMap;
     
-    MapWorld* _oMap;
+    void update (float dt);
+    void checkForCollisionWithPuertas ();
+    void checkForCollisionWithRecursosAndPaintThem ();
+    void roomConstructor ();
+    void roomDeconstructor ();
+    void changeScene (int& iPrevMapIndex);
+    void updatePuertasRecursos ();
+    void createScene ();
     
-    Resource* _oResource;
-    
-    CollisionsPoints* _oCollisionsPoints;
-    
-    vector* _piResourcePoints;
-    
-    vector* _piCollisionPoints;
+    std::string chooseADoor (int& iPrevMapIndex);
     
 public:
     
@@ -60,15 +84,7 @@ public:
     
     bool init ();
     
-    void update(float dt);
-    
-    
-    Platform * platformArray [ 3 ];
-    
     CREATE_FUNC( ViewGame );
-    
-    
-    
 };
 
-#endif /* defined(__DemoInduccion__ViewGame__) */
+#endif /* defined(__JuegoTequilero__ViewGame__) */

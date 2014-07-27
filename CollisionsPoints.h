@@ -1,13 +1,13 @@
 //
 //  CollisionsPoints.h
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Administrador on 7/6/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __DemoInduccion__CollisionsPoints__
-#define __DemoInduccion__CollisionsPoints__
+#ifndef __JuegoTequilero__CollisionsPoints__
+#define __JuegoTequilero__CollisionsPoints__
 
 #include <iostream>
 
@@ -20,9 +20,9 @@ class CollisionsPoints
     
 private:
     
-    int _iWidth;
+    int _lWidth;
     
-    int _iHeight;
+    int _lHeight;
     
     int _iMPoints;
     
@@ -30,17 +30,25 @@ private:
     
     vector* _piCollisionsPoints;
     
+    vector* _piTransparentCollisionsPoints;
+    
+    vector* initVectorWith (int X, int Y, int Activo, const int& iLayer = 0);
+    
     void initPoints (cocos2d::TMXTiledMap& _tileMap);
     
-    void setCollisionPoint ( cocos2d::TMXLayer* layer );
+    void initTileLado (cocos2d::TMXTiledMap& _tileMap);
     
-    void initNPoints ( cocos2d::TMXLayer* layer );
+    void setCollisionPoint (cocos2d::TMXLayer* layer, int iLayer);
+    
+    void initNPoints (cocos2d::TMXLayer* layer);
+    
+    void initPointsTransparent (cocos2d::TMXTiledMap& _tileMap);
     
     void initArray ();
     
-    void deleteArray ();
+    void initTransparentArray ();
     
-    vector*  initVectorWith ( int X, int Y );
+    void resetValues ();
     
 public:
     
@@ -48,7 +56,20 @@ public:
     
     ~CollisionsPoints ();
     
-    vector* initCollisionPoints ( cocos2d::TMXTiledMap& _tileMap );
+    vector* initCollisionPoints (cocos2d::TMXTiledMap& _tileMap);
+    
+	vector* initTransparentCollisionPoints(cocos2d::TMXTiledMap& _tileMap);
+    
+    int& getMPoints ();
+    
+    int& getNPoints ();
+    
+    int& getIWidth ();
+    
+    int& getIHeight ();
+    
+    void deleteArray ();
 };
 
-#endif /* defined(__DemoInduccion__CollisionsPoints__) */
+
+#endif /* defined(__JuegoTequilero__CollisionsPoints__) */

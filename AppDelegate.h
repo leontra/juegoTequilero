@@ -3,8 +3,6 @@
 
 #include "cocos2d.h"
 
-#include "SceneView.h"
-
 /**
 @brief    The cocos2d Application.
 
