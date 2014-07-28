@@ -1,0 +1,13 @@
+Enter file contents herevoid Player::checkForCollisions ()
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+
+	_oBoxCollisions->checkforplayer(_iX, _iY, visibleSize.height, _piCollisionPoints);
+
+    //Colisiones con las plataformas normales
+    _oBoxCollisions->doCollisionWith (_iX, _iY, _iPlayerWidth, _iPlayerHeight, _iVx, _iVy, _piCollisionPoints);
+    
+    //Colisiones con las plataformas transparentes, solo si existen en el mapa
+    if (_piTransparentCollisionPoints)
+        _oBoxCollisions->doCollisionWithTransparentPlatform (_iX, _iY, _iPlayerWidth, _iPlayerHeight, _iVx, _iVy, _piTransparentCollisionPoints);
+}
