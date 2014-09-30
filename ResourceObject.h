@@ -18,8 +18,9 @@ struct _ObjectResource
     int iActivo;
     int width;
     int height;
+    int iType;
     
-    std::string sPuerta;
+    std::string name;
     
     cocos2d::Sprite* spriteResource;
 };

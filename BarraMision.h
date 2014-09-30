@@ -18,20 +18,42 @@ class BarraMision: public cocos2d::Layer
     
 private:
     
+    int _posX;
+    int _posY;
     int _iBarraWidth;
     int _iBarraHeight;
     int _iBarraFill;
     
+    int _iBarraPorcentaje;
     
+    void initBarraFill ();
+    
+    cocos2d::SpriteFrame* _barraSpriteFrame;
+    
+    cocos2d::Sprite* sprite;
+    
+    void initBarraMisionObject (cocos2d::TMXTiledMap& _tileMap);
+    
+    void initVariablesBarra (cocos2d::TMXObjectGroup* group);
+    
+    void drawRectForBarra ();
+    
+    void updateBarra ();
 public:
     
     BarraMision ();
     
     ~BarraMision ();
     
-    bool init ();
+    bool init (cocos2d::TMXTiledMap& _tileMap);
     
+    void upgradeBarraWith (int& iUpgrade);
     
+    void reverseBarraWith (int& iReverse);
+    
+    int& getBarraFill ();
+    
+    void deleteBarra ();
     
     
     

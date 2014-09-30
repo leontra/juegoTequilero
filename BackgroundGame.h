@@ -10,17 +10,13 @@
 #define __JuegoTequilero__BackgroundGame__
 
 #include <iostream>
-
-
 #include "cocos2d.h"
 
 class BackgroundGame  :  public cocos2d::LayerColor
 {
     
-    
 private:
     int _iBackgroundWidth;
-    
     
 public:
     
@@ -29,8 +25,6 @@ public:
     int getBackgroundWidth ();
     
     CREATE_FUNC( BackgroundGame );
-    
-    
 };
 
 #endif /* defined(__JuegoTequilero__BackgroundGame__) */

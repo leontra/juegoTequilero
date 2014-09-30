@@ -28,11 +28,11 @@ public:
     
     ~PuertasBoxCollision ();
     
-    int doCollisionsWith (int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, bool& bActionTouch);
+	int doCollisionsWith(int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, bool& bActionTouch, std::string& sPuerta);
     
     void doStartCollisionsWith (int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, std::string sPuerta);
     
-    int doCollisionWithSidesToExit (int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, std::string sAparicion, int& iMapWidth);
+    int doCollisionWithSidesToExit (int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, std::string& sAparicion, int& iMapWidth);
     
     void resetValues ();
     

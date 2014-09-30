@@ -10,23 +10,21 @@
 #define __JuegoTequilero__Button__
 
 #include <iostream>
-
 #include "cocos2d.h"
 
 class Button
 {
-    
 private:
-    
+    cocos2d::Rect _rectButton;
     
 public:
-    Button ();
+    Button( );
     
-    ~Button ();
+    ~Button( );
     
-    cocos2d::EventListenerTouchOneByOne* getNewInputListener ();
+    cocos2d::EventListenerTouchOneByOne* setNewInputListener( const float& x, const float& y, const float& width, const float& height, cocos2d::LayerColor* layer );
     
-    void beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    cocos2d::Rect& getRectButton( );
     
 };
 

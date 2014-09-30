@@ -43,28 +43,24 @@ private:
     cocos2d::Sprite* getLeftButton (int& iButtonWidthPadding, int& iButtonHeightPadding);
     
     cocos2d::Sprite* getRightButton (int& iButtonWidthPadding, int& iButtonHeightPadding);
-    
-    void touchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
-    
+
     void initButtonsSprites (int& iButtonWidthPadding, int& iButtonHeightPadding);
     
-    void beganTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    void beganTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+
+    void endedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
     
-    void beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    void movedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
     
-    void endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
-    
-    void endedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
-    
-    void movedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput);
-    
-    void movedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput);
+    void cancelledTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
     
     void checkForTouchMoved (bool& bTouch, bool& bLastTouch);
     
-    void initilizeBeganTouch (cocos2d::Point& point, cocos2d::Touch* touch);
+    bool initilizeBeganTouch (cocos2d::Point& point, cocos2d::Touch* touch);
     
     void doMovedTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch);
+    
+    void doCancelledTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch );
     
     void testJump (cocos2d::Point& locationInNode);
     

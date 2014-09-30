@@ -10,8 +10,8 @@
 
 
 PuertasBoxCollision::PuertasBoxCollision (int& iPuertaIndex, int& iNPuertas, int* bInicio):  _iPuertaIndex (iPuertaIndex),
-                                                                                               _iNPuertas (iNPuertas),
-                                                                                               _bInicio (bInicio)
+_iNPuertas (iNPuertas),
+_bInicio (bInicio)
 {
     _bInicio = bInicio;
 }
@@ -26,10 +26,10 @@ void PuertasBoxCollision::doStartCollisionsWith (int& iX, int& iY, int& iWidth, 
     //Revisar para saber que el jugador ha salido de la puerta en el inicio de la escena, para que pueda volver a entrar en esta
     for (int i = 0; i < _iNPuertas; ++i)
     {
-        printf ("\nEntras con la puerta:   %s", orPuertasPoints [i].sPuerta.c_str());
+        printf ("\nEntras con la puerta:   %s", orPuertasPoints [i].name.c_str());
         
         //Revisar que haga la colision con la puerta correspondiente
-        if (sPuerta != orPuertasPoints [i].sPuerta)
+		if (orPuertasPoints[i].iType != 3 &&orPuertasPoints[i].iType != 4)
             continue;
         
         //Colision para saber que el jugador salio de la caja de la puerta
@@ -40,35 +40,47 @@ void PuertasBoxCollision::doStartCollisionsWith (int& iX, int& iY, int& iWidth, 
     }
 }
 
-int PuertasBoxCollision::doCollisionsWith (int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, bool& bActionTouch)
+int PuertasBoxCollision::doCollisionsWith(int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, bool& bActionTouch, std::string& sPuerta)
 {
     int iReturn = -1;
     
     for (int i = 0; i < _iNPuertas; ++i)
     {
-        if ((iX - iWidth > orPuertasPoints[i].x) && (iX + iWidth < orPuertasPoints[i].x + orPuertasPoints[i].width) && (iY + iHeight <= orPuertasPoints[i].y + orPuertasPoints[i].height) && (iY - iHeight >= orPuertasPoints[i].y))
+		if (orPuertasPoints[i].iType != 3 && orPuertasPoints[i].iType != 4)
+			continue;
+        if ((iX - iWidth > orPuertasPoints[i].x) && (iX + iWidth < orPuertasPoints[i].x + orPuertasPoints[i].width) && (iY - iHeight <= orPuertasPoints[i].y + orPuertasPoints[i].height) && (iY + iHeight >= orPuertasPoints[i].y))
         {
-            printf ("\nEntras con la puertax:   %s", orPuertasPoints [i].sPuerta.c_str());
+            printf ("\nEntras con la puertax:   %s", orPuertasPoints [i].name.c_str());
             
             //Obtener el numero de mapa que sigue
-            if (bActionTouch) iReturn  = this->checkPuerta (iMapIndex, orPuertasPoints [i].sPuerta);
-            
+			if (!bActionTouch&& !orPuertasPoints[1].iActivo) {
+				iReturn = this->checkPuerta(iMapIndex, orPuertasPoints[2].name);
+				sPuerta =  ("PuertaSalida");
+			}
+			if (!bActionTouch&& orPuertasPoints[1].iActivo) {
+				iReturn = this->checkPuerta(iMapIndex, orPuertasPoints[1].name);
+				sPuerta = ("PuertaEntrada");
+			}
             return iReturn;
         }
     }
     return -1;
 }
 
-int PuertasBoxCollision::doCollisionWithSidesToExit(int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, std::string sAparicion, int& iMapWidth)
+int PuertasBoxCollision::doCollisionWithSidesToExit(int& iX, int& iY, int& iWidth, int& iHeight, objectResource* orPuertasPoints, int& iMapIndex, std::string& sAparicion, int& iMapWidth)
 {
     int iReturn = -1;
     
-    if (iX - iWidth > iMapWidth)
-        iReturn = ++iMapIndex;
-    else
-    if (iX + iWidth < 0)
-        iReturn = --iMapIndex;
+	if (iX - iWidth > iMapWidth){
+		sAparicion = ("Entrada");
+		iReturn = ++iMapIndex;
+	}
     
+    else
+        if (iX + iWidth < 0){
+            sAparicion = ("Salida");
+            iReturn = --iMapIndex;
+        }
     return iReturn;
 }
 
@@ -80,11 +92,17 @@ void PuertasBoxCollision::resetValues ()
 
 int PuertasBoxCollision::checkPuerta (int& iMapIndex, std::string sPuerta)
 {
-    if (sPuerta == ("Entrada"))
-        return --iMapIndex;
+	if (sPuerta == ("PuertaEntrada"))
+	{
+		iMapIndex = iMapIndex + 2;
+		return iMapIndex;
+	}
     
-    if (sPuerta == "Salida")
-        return ++iMapIndex;
+	if (sPuerta == "PuertaSalida")
+	{
+		iMapIndex = iMapIndex - 2;
+		return iMapIndex;
+	}
     
     return 0;
 }

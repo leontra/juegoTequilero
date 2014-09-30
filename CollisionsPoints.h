@@ -28,11 +28,13 @@ private:
     
     int _iNPoints;
     
+    int _iMapeo;
+    
     vector* _piCollisionsPoints;
     
     vector* _piTransparentCollisionsPoints;
     
-    vector* initVectorWith (int X, int Y, int Activo, const int& iLayer = 0);
+    vector* initVectorWith(int X, int Y, int Activo, int PA, const int& iLayer = 0);
     
     void initPoints (cocos2d::TMXTiledMap& _tileMap);
     

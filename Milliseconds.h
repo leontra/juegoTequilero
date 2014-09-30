@@ -16,45 +16,37 @@
 class Milliseconds
 {
     
-    
 private:
     
-    float fMillisStart;
+    float _fMillisStart;
     
-    float fMillisCount;
+    int _fMillisCount;
     
+    float _iMillisCount;
     
-    bool bSeconds;
+    bool _bSeconds;
     
+    float fGetMilliCount();
+    
+    int iGetMilliCount ();
     
 public:
     
-    static float fGetMilliCount();
+    bool getSecCount ();
     
-    bool getSecCount();
+    float getCount ();
     
-    float getCount();
+    void startCounter ();
     
-    Milliseconds()
-    {
-        
-        fMillisStart = 0;
-        
-        fMillisCount = 0;
-        
-        bSeconds = false;
-        
-    }
+    float& getSecsCounter ();
     
-    ~ Milliseconds()
-    {
-        
-        
-        
-    }
+    int getMillisInterval (int iTimeInterval);
     
+    int getEveryMillis ();
     
+    Milliseconds ();
     
+    ~ Milliseconds();
     
 };
 

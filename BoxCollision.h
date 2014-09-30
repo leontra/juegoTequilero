@@ -22,50 +22,61 @@ class BoxCollision
     
 private:
     
-    int& _lTileWidth;
-    int& _lTileHeight;
-    int& _iMPoints;
-    int& _iNPoints;
+	int& _lTileWidth;
+	int& _lTileHeight;
+	int& _iMPoints;
+	int& _iNPoints;
     
-    int* _bCollisionX;
-    int* _bCollisionY;
-    int* _bTouchFloor;
-    int* _bTouchUp;
+	int* _bCollisionX;
+	int* _bCollisionY;
+	int* _bTouchFloor;
+	int* _bTouchUp;
     
-    int _iContador;
+	int _iDuracionPlataforma;
+	int _iContador;
     
-    int _iTempVy;
+	int col;
     
-    float& _fGravedad;
+	int _iTempVy;
     
-    void checkForCollisions (int* iX, int* iY, int& iVx, int* iVy, int& iWidth, int& iHeight, int& iVectorX, int& iVectorY);
+	float& _fGravedad;
     
-    void getValues (int* iVy);
+	void checkForCollisions(int* iX, int* iY, int& iVx, int* iVy, int& iWidth, int& iHeight, int& iVectorX, int& iVectorY);
     
-    void checkForRightCollision (int* iX, int& iVx, int& iWidth, int& iVectorX);
-    void checkForLeftCollision (int* iX, int& iVx, int& iWidth, int& iVectorX);
+	void getValues(int* iVy);
     
-    void checkForFloorCollision (int* iY, int* iVy, int& iHeight, int& iVectorY);
+	void checkForRightCollision(int* iX, int& iVx, int& iWidth, int& iVectorX);
+    
+	void checkForLeftCollision(int* iX, int& iVx, int& iWidth, int& iVectorX);
+    
+	void checkForFloorCollision(int* iY, int* iVy, int& iHeight, int& iVectorY);
+    
 	void checkForFloorTransparentCollision(int* iX, int* iY, int& iVx, int* iVy, int& iWidth, int& iHeight, int& iVectorX, int& iVectorY);
-    void checkForTopCollision (int* iY, int* iVy, int& iHeight, int& iVectorY);
+    
+	void checkForTopCollision(int* iY, int* iVy, int& iHeight, int& iVectorY);
+    
 	void checkForTopTransparentCollision(int* iX, int* iY, int& iVx, int* iVy, int& iWidth, int& iHeight, int& iVectorX, int& iVectorY);
     
-    void sumContador ();
+	void doMapeo(int* iX, int* iY, int& iMapeo, vector* mapeo);
     
-    Milliseconds* _oCronometro;
+    
+	void sumContador();
+    
+	Milliseconds* _oCronometro;
     
 public:
     
-    BoxCollision (int& tileWidth, int& tileHeight, int& iMPoints, int& iNPoints, float& fGravedad, int* bCollisionX, int* bCollisionY, int* bTouchFloor, int* bTouchUp);
+	BoxCollision(int& tileWidth, int& tileHeight, int& iMPoints, int& iNPoints, float& fGravedad, int* bCollisionX, int* bCollisionY, int* bTouchFloor, int* bTouchUp);
     
-    ~BoxCollision ();
+	~BoxCollision();
     
-    void doCollisionWith (int* iX, int* iY, int& iWidth, int& iHeight, int& iVx, int* iVy, vector* vCollision);
+	void doCollisionWith(int* iX, int* iY, int& iWidth, int& iHeight, int& iVx, int* iVy, vector* vCollision);
     
 	void doCollisionWithTransparentPlatform(int* iX, int* iY, int& iWidth, int& iHeight, int& iVx, int* iVy, vector* vCollision);
     
-    void resetValues ();
+	void resetValues();
 };
+
 
 
 

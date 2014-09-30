@@ -84,7 +84,7 @@ objectResource* Puertas::initVectorWith (int X, int Y, int width, int height, st
     
     orPosResource->height = height;
     
-    orPosResource->sPuerta = sPuerta;
+    orPosResource->name = sPuerta;
     
     return orPosResource;
 }

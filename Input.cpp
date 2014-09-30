@@ -65,18 +65,19 @@ void Input::initInput (cocos2d::Size visibleSize)
     int iButtonHeightPadding = 30;
     
     //Inicializar los sprites del input de movimiento
-    this->initButtonsSprites (iButtonWidthPadding, iButtonHeightPadding);
+    this->initButtonsSprites( iButtonWidthPadding, iButtonHeightPadding);
     
     //Inicializar el input del player
-    auto listenerInputPlayer = this->getInputListener ();
+    auto listenerInputPlayer = this->getInputListener( );
     
     //Inicializar los diferentes tipos de eventos del input
     this->beganTouch (listenerInputPlayer);
     this->movedTouch (listenerInputPlayer);
     this->endedTouch (listenerInputPlayer);
+    this->cancelledTouch( listenerInputPlayer );
     
     //Agregar el input a los eventos del juego
-    _eventDispatcher->addEventListenerWithFixedPriority (listenerInputPlayer, 2);
+    _eventDispatcher->addEventListenerWithFixedPriority( listenerInputPlayer, 5 );
 }
 
 void Input::initVariables (Size visibleSize)
@@ -124,103 +125,48 @@ EventListenerTouchOneByOne* Input::getInputListener ()
     return listenerInputPlayer;
 }
 
-void Input::touchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
-{
-    this->beganTouchForJump (listenerInput);
-    this->movedTouchForJump (listenerInput);
-    this->endedTouchForJump (listenerInput);
-}
-
-void Input::beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
-{
-    listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
-    {
-        Point locationInNode = touch->getLocation ();
-        
-        Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
-        
-        touch->getID ();
-        
-        if (rectJump.containsPoint (locationInNode))
-            _iJumpTouch = locationInNode.y;
-        
-        return 1;
-        
-    }; // onTouchBegan
-}
-
-void Input::movedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
-{
-    //Revisar si movio el dedo sin despegarlo de la pantalla
-    listenerInput->onTouchMoved = [&] (cocos2d::Touch* touch,  cocos2d::Event* event)
-    {
-        Point locationInNode = touch -> getLocation ();
-        
-        Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
-        
-        if (locationInNode.y > _iJumpTouch + 20 && !_bLastJump && rectJump.containsPoint (locationInNode))
-        {
-            _bJump = 1;
-            _bLastJump = 1;
-        }
-    }; //Touch Moved
-}
-
-void Input::endedTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
-{
-    listenerInput->onTouchEnded = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
-    {
-        Point locationInNode = touch -> getLocation ();
-		
-        Rect rectJump = Rect(0, fDivisionHeight, fWidth, fDivisionHeight);
-        
-        if (_bLastJump)
-        {
-            _bLastJump = 0;
-            _iJumpTouch = 0;
-        }
-    }; //onTouchEnded
-}
-
 void Input::beganTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
 {
     listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
     {
         Point locationInNode = touch->getLocation ();
         
-        this->initilizeBeganTouch (locationInNode, touch);
-        
-        return 1;
+        return initilizeBeganTouch (locationInNode, touch);
         
     }; // onTouchBegan
 }
 
-void Input::initilizeBeganTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch)
+bool Input::initilizeBeganTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch)
 {
     // Rect rectAction = Rect ( 0, 0, fWidth, fDivisionHeight);
-    Rect rectLeft = Rect (0, 0, _iButtonWidth, _iButtonHeight);
+    Rect rectLeft = Rect ( 0, 0, _iButtonWidth, _iButtonHeight);
     Rect rectRight = Rect (fWidth - _iButtonWidth, 0, _iButtonWidth, _iButtonHeight);
-    Rect rectJump = Rect(0, 0, fWidth, fDivisionHeight * 2);
+    Rect rectJump = Rect( 0, 0, fWidth, fDivisionHeight * 2);
     
-    touch->getID ();
+    //std::cout << "Input Touch Began" << std::endl;
     
     if (rectLeft.containsPoint (locationInNode))
     {
         _bLeft = 1;
         touch->_ID = 1;
+        return 1;
     }
     else
     if (rectRight.containsPoint (locationInNode))
     {
         _bRight = 1;
         touch->_ID = 2;
+        return 1;
     }
     else
     if (rectJump.containsPoint (locationInNode))
     {
         _iJumpTouch = locationInNode.y;
-        touch->_ID = 3;
+        touch->_ID = touch->_ID;
+        return 1;
     }
+    
+    return 0;
 }
 
 void Input::endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
@@ -231,13 +177,13 @@ void Input::endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
         
         int iTouchID = touch->_ID;
         
-        if (iTouchID == 1)
+        if( iTouchID == 1 )
             _bLeft = 0;
         
-        if (iTouchID == 2)
+        if( iTouchID == 2 )
             _bRight = 0;
         
-        if (iTouchID == 3)
+        if( ( iTouchID == 12 || iTouchID == 11 || iTouchID == 14 ) )
         {
             _bLastAction = 0;
             _bJump = 0;
@@ -264,13 +210,41 @@ void Input::doMovedTouch (cocos2d::Point& locationInNode, cocos2d::Touch* touch)
     
     int iTouchID = touch->_ID;
     
+    if( iTouchID == 1 && !rectLeft.containsPoint( locationInNode ) )
+        _bLeft = 0;
+    
+    if( iTouchID == 2 && !rectRight.containsPoint( locationInNode ) )
+        _bRight = 0;
+    
+    if( ( iTouchID == 12 || iTouchID == 11 ) && !_bLastAction )
+        this->testJump( locationInNode );
+}
+
+void Input::cancelledTouch( cocos2d::EventListenerTouchOneByOne* listenerInput )
+{
+    listenerInput->onTouchCancelled = [&] (cocos2d::Touch* touch,  cocos2d::Event* event)
+    {
+        Point locationInNode = touch->getLocation( );
+        
+        this->doCancelledTouch( locationInNode, touch );
+        
+    };
+}
+
+void Input::doCancelledTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch )
+{
+    Rect rectLeft = Rect (0, 0, _iButtonWidth, _iButtonHeight);
+    Rect rectRight = Rect (fWidth - _iButtonWidth, 0, _iButtonWidth, _iButtonHeight);
+    
+    int iTouchID = touch->_ID;
+    
     if (iTouchID == 1 && !rectLeft.containsPoint (locationInNode))
         _bLeft = 0;
     
     if (iTouchID == 2 && !rectRight.containsPoint (locationInNode))
         _bRight = 0;
     
-    if (iTouchID == 3 && !_bLastAction)
+    if ( ( iTouchID == 12 || iTouchID == 11 ) && !_bLastAction)
         this->testJump (locationInNode);
 }
 
@@ -278,7 +252,7 @@ void Input::testJump (cocos2d::Point& locationInNode)
 {
     Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
     
-    if (locationInNode.y > _iJumpTouch + 25)
+    if (locationInNode.y > _iJumpTouch + 30)
     {
         _bLastAction = 1;
         _bJump = 1;

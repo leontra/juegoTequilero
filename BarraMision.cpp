@@ -10,35 +10,128 @@
 
 USING_NS_CC;
 
-BarraMision::BarraMision (): _iBarraFill (0),
+BarraMision::BarraMision ():
+                               _posX (0),
+                               _posY (0),
+                               _iBarraFill (0),
                                _iBarraWidth (0),
-                               _iBarraHeight (0)
+                               _iBarraHeight (0),
+                               _barraSpriteFrame (0),
+                               _iBarraPorcentaje (0)
 {
     
 }
 
 BarraMision::~BarraMision ()
 {
-    
 }
 
-
-bool BarraMision::init ()
+bool BarraMision::init (cocos2d::TMXTiledMap& _tileMap)
 {
     if (!Layer::create())
         return 0;
     
-    glLineWidth (1);
+    this->initBarraMisionObject (_tileMap);
     
-    DrawPrimitives::setDrawColor4B (180, 180, 180, 255);
+    this->initBarraFill ();
     
-    DrawPrimitives::setPointSize (1);
+    this->drawRectForBarra ();
+
+    sprite = cocos2d::Sprite::createWithSpriteFrame( _barraSpriteFrame );
     
-    glLineWidth (1);
+    sprite->setPosition(_posX, _posY);
     
-    Point filledVertices [] = {Point (10,120), Point (50,120), Point (50,170), Point (25,200), Point (10,170)};
+    sprite->setAnchorPoint (Point (0, 0));
     
-    DrawPrimitives::drawSolidPoly (filledVertices, 5, Color4F (0.5f, 0.5f, 1, 1));
+    this->addChild (sprite, 0, 0);
     
     return 1;
 }
+
+void BarraMision::initBarraFill( )
+{
+    _iBarraPorcentaje = 10;
+    
+    _iBarraFill = ( _iBarraPorcentaje * _iBarraWidth ) / 100;
+}
+
+void BarraMision::initBarraMisionObject( cocos2d::TMXTiledMap& _tileMap )
+{
+    //Obtener los diferentes objetos contenidos en el xml
+    auto tileGroups = _tileMap.getObjectGroups( );
+    
+    //Obtener posiciones del player
+    for( auto& objectGroup : tileGroups )
+    {
+        //Terminar si el objeto no es un recurso
+        if( objectGroup->getGroupName( ) != "BarraMision" )
+            continue;
+        
+        this->initVariablesBarra( objectGroup );
+        
+    }//For
+}
+
+void BarraMision::initVariablesBarra( cocos2d::TMXObjectGroup* group )
+{
+    //Obtener objeto
+    auto objects = group->getObjects( );
+    
+    //Revisar por cada propiedad del objeto
+    for (auto& object : objects)
+    {
+        auto properties = object.asValueMap( );
+        
+        _posX = properties.at( "x" ).asInt( );
+        
+        _posY = properties.at( "y" ).asInt( );
+        
+        _iBarraWidth = properties.at( "width" ).asInt();
+        
+        _iBarraHeight = properties.at( "height" ).asInt();
+    }
+}
+
+void BarraMision::upgradeBarraWith( int& iUpgrade )
+{
+    _iBarraPorcentaje += iUpgrade;
+    
+    if( _iBarraPorcentaje > 100 ) _iBarraPorcentaje = 100;
+    
+    _iBarraFill = ( _iBarraPorcentaje * _iBarraWidth ) / 100;
+    
+    this->drawRectForBarra( );
+    this->updateBarra( );
+}
+
+void BarraMision::drawRectForBarra( )
+{
+    Rect rectBarra = Rect( _posX, _posY, _iBarraFill, _iBarraHeight );
+    
+    _barraSpriteFrame = cocos2d::SpriteFrame::create( "barraFill.png", rectBarra );
+}
+
+void BarraMision::reverseBarraWith( int& iReverse )
+{
+    _iBarraFill -= ( iReverse * _iBarraWidth ) / 100;
+    this->drawRectForBarra( );
+    this->updateBarra( );
+}
+
+void BarraMision::updateBarra( )
+{
+    std::cout << "Update Barra:     " << _iBarraFill << std::endl;
+    sprite->setSpriteFrame( _barraSpriteFrame );
+}
+
+int& BarraMision::getBarraFill( )
+{
+    return _iBarraFill;
+}
+
+void BarraMision::deleteBarra( )
+{
+    _barraSpriteFrame = 0;
+    this->removeChild( sprite, 1 );
+}
+

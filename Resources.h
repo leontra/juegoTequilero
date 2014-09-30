@@ -24,7 +24,9 @@ private:
     
     void initArray ();
     
-    objectResource*  initVectorWith ( int X, int Y, int width, int height );
+	objectResource*  initVectorWith(int X, int Y, int width, int height, int type, std::string name);
+    
+	void ResourceType(objectResource* piMRP, int X, int Y, std::string name);
     
 public:
     
@@ -34,10 +36,9 @@ public:
     
     void deleteArray ();
     
-    int getNRecursos ();
+    int& getNRecursos ();
     
-    objectResource* initResources (cocos2d::TMXTiledMap& _tileMap);
-    
+    objectResource* initResources( cocos2d::TMXTiledMap& _tileMap );
     
     bool init ();
 };

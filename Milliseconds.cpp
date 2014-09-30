@@ -8,65 +8,113 @@
 
 #include "Milliseconds.h"
 
-#define COCOS2D_DEBUG 1
 
-USING_NS_CC;
+Milliseconds::Milliseconds (): _fMillisStart (0),
+                                 _iMillisCount (0),
+                                 _fMillisCount (0),
+                                 _bSeconds (0)
+{
+}
 
-
+Milliseconds::~Milliseconds ()
+{
+}
 
 float Milliseconds::fGetMilliCount ( )
 {
-    
     timeval time;
     
-    gettimeofday( &time,  NULL );
+    gettimeofday( &time,  0 );
     
-    unsigned long millisecs = ( time.tv_sec * 1000 ) + ( time.tv_usec  /  1000 );
+    long double millisecs = (time.tv_sec * 1000) + (time.tv_usec  /  1000);
     
-    return ( float ) millisecs;
-    
+    return (float) millisecs;
     
 } // float getMilliCount
+
+int Milliseconds::iGetMilliCount ()
+{
+    timeval curTime;
+    gettimeofday (&curTime, NULL);
+    unsigned int millis = (curTime.tv_sec * 1000) + (curTime.tv_usec / 1000);
+
+    return millis;
+}
 
 
 bool Milliseconds::getSecCount ()
 {
-    
-    if( !bSeconds )
+    if (!_bSeconds)
     {
-        fMillisStart = Milliseconds::fGetMilliCount ();
-        bSeconds = 1;
+        _fMillisStart = this->fGetMilliCount ();
+        _bSeconds = 1;
     }
     
-    if( ( fGetMilliCount () - fMillisStart ) >= 1000 )
+    if ((fGetMilliCount () - _fMillisStart) >= 1000)
     {
-        bSeconds = 0;
-        fMillisCount ++;
-        
+        _bSeconds = 0;
         return 1;
     }
     
-    return false;
+    return 0;
 }
+
 
 float Milliseconds::getCount ()
 {
-    
-    if( ! bSeconds )
+    if (!_bSeconds)
     {
-        
-        fMillisStart = Milliseconds::fGetMilliCount ();
-        
-        bSeconds = true;
-        
+        _fMillisStart = this->fGetMilliCount ();
+        _bSeconds = 1;
     }
     
-    if( ( Milliseconds::fGetMilliCount () - fMillisStart ) >= 1000 )
-        
-        bSeconds = false;
+    if ((this->fGetMilliCount () - _fMillisStart) >= 1000)
+        _bSeconds = 0;
     
-    
-    
-    return ( Milliseconds::fGetMilliCount () - fMillisStart );
-    
+    return (this->fGetMilliCount () - _fMillisStart);
 }
+
+float& Milliseconds::getSecsCounter ()
+{
+    if (!_bSeconds)
+    {
+        _fMillisStart = this->fGetMilliCount ();
+        _bSeconds = 1;
+    }
+    
+    if ((this->fGetMilliCount () - _fMillisStart) >= 1000)
+    {
+        ++_iMillisCount;
+        _bSeconds = 0;
+    }
+    
+    return (_iMillisCount);
+}
+
+void Milliseconds::startCounter ()
+{
+    _fMillisCount = this->iGetMilliCount ();
+}
+
+int Milliseconds::getMillisInterval (int iTimeInterval)
+{
+    int timeInterval = this->iGetMilliCount ();
+    
+    timeInterval -= _fMillisCount;
+    
+    if (timeInterval >= iTimeInterval && _fMillisCount)
+    {
+        _fMillisCount = 0;
+        return 1;
+    }
+    _fMillisCount = 0;
+    return 0;
+}
+
+
+int Milliseconds::getEveryMillis ()
+{
+    return this->iGetMilliCount ();
+}
+
+

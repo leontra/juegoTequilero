@@ -121,9 +121,9 @@ void CollisionsPoints::setCollisionPoint (cocos2d::TMXLayer* layer, int iLayer)
                 //log ( "\nEl valor del tile = (%f  :  %f)", p.x, p.y);
                 bActivo = 1;
             }
-            
+			
             if (!iLayer)
-                _piCollisionsPoints [x + (y * _iMPoints)] = *(this->initVectorWith (int (p.x), int (p.y), bActivo));
+                _piCollisionsPoints [x + (y * _iMPoints)] = *(this->initVectorWith (int (p.x), int (p.y), bActivo,_iMapeo));
             if (iLayer)
             {
                 int iLayer = 0;
@@ -131,7 +131,7 @@ void CollisionsPoints::setCollisionPoint (cocos2d::TMXLayer* layer, int iLayer)
                     iLayer = 1;
                 
                 if (!_piTransparentCollisionsPoints [x + (y * _iMPoints)].iActivo)
-                    _piTransparentCollisionsPoints [x + (y * _iMPoints)] = *(this->initVectorWith (int (p.x), int (p.y), bActivo, iLayer));
+                    _piTransparentCollisionsPoints [x + (y * _iMPoints)] = *(this->initVectorWith (int (p.x), int (p.y), bActivo,_iMapeo, iLayer));
             }
         }
     }
@@ -179,7 +179,7 @@ void CollisionsPoints::initTransparentArray ()
     this->_piTransparentCollisionsPoints = new vector [(_iMPoints * _iNPoints)] ();
 }
 
-vector* CollisionsPoints::initVectorWith (int X, int Y, int Activo, const int& iLayer)
+vector* CollisionsPoints::initVectorWith (int X, int Y, int Activo,int PA, const int& iLayer)
 {
     vector* vPosCollision = new vector ();
     
@@ -190,6 +190,8 @@ vector* CollisionsPoints::initVectorWith (int X, int Y, int Activo, const int& i
     vPosCollision->iActivo = Activo;
     
     vPosCollision->iToB = iLayer;
+    
+	vPosCollision->iPlayer = PA;
     
     return vPosCollision;
 }

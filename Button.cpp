@@ -20,31 +20,28 @@ Button::~Button ()
     
 }
 
-cocos2d::EventListenerTouchOneByOne* Button::getNewInputListener ()
+cocos2d::EventListenerTouchOneByOne* Button::setNewInputListener( const float& x, const float& y, const float& width, const float& height, cocos2d::LayerColor* layer )
 {
-    auto listenerInput = EventListenerTouchOneByOne::create ();
+    auto listenerInput = EventListenerTouchOneByOne::create( );
     
-    listenerInput->setSwallowTouches (0);
+    _rectButton = Rect( x, y, width, height);
     
-    this->beganTouchForJump (listenerInput);
+    auto spriteButton = Sprite::create( "button.png" );
+    spriteButton->setOpacity (50);
+    spriteButton->setAnchorPoint (Point (0, 0));
+    spriteButton->setPosition( x, y );
+    
+    layer->addChild( spriteButton );
+    
+    listenerInput->setSwallowTouches( 0 );
     
     return listenerInput;
 }
 
-void Button::beganTouchForJump (cocos2d::EventListenerTouchOneByOne* listenerInput)
+cocos2d::Rect& Button::getRectButton( )
 {
-    listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
-    {
-        cocos2d::Point locationInNode = touch->getLocation ();
-        
-        touch->getID ();
-        /*
-        Rect rectJump = Rect (0, fDivisionHeight, fWidth, fDivisionHeight);
-        
-        if (rectJump.containsPoint (locationInNode))
-            _iJumpTouch = locationInNode.y;
-        */
-        return 1;
-        
-    }; // onTouchBegan
+    return _rectButton;
 }
+
+
+

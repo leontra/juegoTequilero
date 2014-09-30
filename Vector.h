@@ -15,6 +15,7 @@ struct _Vector
     int y;
     int iActivo;
     int iToB;
+    int iPlayer;
 };
 
 typedef _Vector vector;

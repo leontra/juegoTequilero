@@ -29,6 +29,12 @@
 
 #include "SimpleAudioEngine.h"
 
+#include "Milliseconds.h"
+
+#include "PauseGame.h"
+
+
+
 
 class ViewGame: public cocos2d::Layer
 {
@@ -37,6 +43,14 @@ private:
     bool _bfStart;
     bool _bChangeScene;
     bool _bActionTouch;
+    
+    bool _bPauseLeft;
+    bool _bPauseRight;
+    bool _bStartTouchLeft;
+    bool _bStartTouchRight;
+    bool _bPause;
+    
+    float _iStartSeconds;
     
     CocosDenshion::SimpleAudioEngine* _oAudioEngine;
     
@@ -50,15 +64,19 @@ private:
     int _iAvanzoRetrocedio;
     int _iMapWidth;
     
+    float _fPauseLeft;
+    float _fPauseRight;
+    
     std::string _sPuerta;
     
     MapWorld* _oMap;
     Resource* _oResource;
     Player* _oPlayer;
-    Puertas* _oPuertas;
+    Resource* _oPuertas;
     PuertasBoxCollision* _oPuertasBoxCollision;
     DrawRecursos* _oDrawRecursos;
     BarraMision* _oBarraMision;
+    Milliseconds* _oMilliseconds;
     
     objectResource* _piResourcePoints;
     objectResource* _orPuertasPoints;
@@ -74,7 +92,18 @@ private:
     void updatePuertasRecursos ();
     void createScene ();
     
-    std::string chooseADoor (int& iPrevMapIndex);
+    void pauseGameInput ();
+    cocos2d::EventListenerTouchOneByOne* createInputForPause ();
+    
+    void beganTouch( cocos2d::EventListenerTouchOneByOne* listenerPause );
+    void endedTouch( cocos2d::EventListenerTouchOneByOne* listenerPause );
+    void movedTouch( cocos2d::EventListenerTouchOneByOne* listenerPause );
+    void cancelledTouch( cocos2d::EventListenerTouchOneByOne* listenerPause );
+    
+    void resetPauseValues( );
+    void doPause( );
+    
+    std::string chooseADoor( int& iPrevMapIndex );
     
 public:
     

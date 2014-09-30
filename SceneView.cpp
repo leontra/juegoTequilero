@@ -16,9 +16,9 @@ USING_NS_CC;
 
 
 
-Scene * SceneView::createScene ()
+Scene * SceneView::createScene( )
 {
-    auto scene = Scene::create ();
+    auto scene = Scene::create( );
     
     auto layerBackground = BackgroundGame::create ();
     scene -> addChild ( layerBackground,  0 );

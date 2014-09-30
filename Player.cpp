@@ -216,7 +216,7 @@ void Player::jump ()
     _fAy -= (6 * _fTiempo);
     _fAy = ((_fAy / 4)) > 0 ? _fAy : 0;
     *_iVy = _fAy / 4;
-    printf ("\nLa desaceleracion es:   %f\n", _fAy);
+    //printf ("\nLa desaceleracion es:   %f\n", _fAy);
 }
 
 //Resetear los valores al tocar techo
@@ -286,7 +286,7 @@ void Player::constraintY ()
 {
 	if (*_iY <= -_iPlayerHeight && !_fbJump)
     {
-		Player::setInitialValues(_iFallx, _iFally);
+		Player::setInitialValues (_iFallx, _iFally);
     }
 }
 
@@ -363,7 +363,6 @@ void Player::getAllValues (int& iX, int& iY, int& iWidth, int& iHeight, bool& bA
     iWidthTile = _iMapWidth;
 }
 
-//Mandar a hacer las colisiones con los tiles del mapa
 void Player::checkForCollisions ()
 {
     //Colisiones con las plataformas normales
@@ -386,7 +385,7 @@ void Player::initPosition (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta)
     for (auto& objectGroup:tileGroups)
     {
         //Terminar si el objeto no es un recurso
-        if (objectGroup->getGroupName() != "Aparicion")
+		if (objectGroup->getGroupName() != "Aparicion" && objectGroup->getGroupName() != "Recurso")
             continue;
         
         //Obtener objeto
@@ -407,11 +406,22 @@ void Player::initPosition (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta)
 			int Y = posY.asInt() + _iPlayerHeight;
             
 			//Mandar las posiciones para inicializar
-			if (name.asString() == sPuerta){
+			if (name.asString() == sPuerta)
+            {
 				Player::setInitialValues(X, Y);
 				_iFallx = X;
 				_iFally = Y;
 			}
+			/*if (name.asString() == sPuerta&& ("PuertaSalida") == sPuerta){
+             Player::setInitialValues(X, Y);
+             _iFallx = X;
+             _iFally = Y;
+             }
+             if (name.asString() == sPuerta && ("PuertaEntrada") == sPuerta){
+             Player::setInitialValues(X, Y);
+             _iFallx = X;
+             _iFally = Y;
+             }*/
             
         }//For
         
