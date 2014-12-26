@@ -1,29 +1,37 @@
 //
 //  BackgroundGame.cpp
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Max on 5/12/14.
+//  Created by Max on 7/11/14.
 //
 //
 
 #include "BackgroundGame.h"
-#include <CCGeometry.h>
+
 #define COCOS2D_DEBUG 1
 USING_NS_CC;
 
 
 bool BackgroundGame::init ()
 {
-    
-    
-    if( ! LayerColor::initWithColor ( Color4B ( 255,  255,  255,  255 ) ) )
+    if( ! LayerColor::initWithColor ( Color4B ( 30,  150,  130,  255 ) ) )
         return false;
     
+    cocos2d::Sprite* spriteBackground = Sprite::create ("CampoBackground.png");
     
-    this -> setColor( Color3B ( 89, 255, 228 ) );
-
+    spriteBackground->setAnchorPoint ( Point(0, 0));
+    
+    addChild (spriteBackground);
+    
+    _iBackgroundWidth = spriteBackground->getContentSize().width;
+    
+    //this -> setColor( Color3B ( 89, 255, 228 ) );
     
     return true;
     
-    
 } // Bool init
+
+int BackgroundGame::getBackgroundWidth ()
+{
+    return _iBackgroundWidth;
+}

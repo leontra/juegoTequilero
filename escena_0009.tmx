@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="16" height="8" tilewidth="72" tileheight="80">
+ <tileset firstgid="1" name="TilesHacienda" tilewidth="72" tileheight="80">
+  <image source="HaciendaTiles.png" trans="ffff00" width="360" height="400"/>
+ </tileset>
+ <layer name="NormalPlatform" width="16" height="8">
+  <data>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="2"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="3"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="4"/>
+   <tile gid="4"/>
+   <tile gid="4"/>
+   <tile gid="4"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+   <tile gid="0"/>
+   <tile gid="9"/>
+  </data>
+ </layer>
+ <layer name="HardBottomPlatform" width="16" height="8">
+     <data>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="16"/>
+         <tile gid="16"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+     </data>
+ </layer>
+ <layer name="HardTopPlatform" width="16" height="8">
+     <data>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="19"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="20"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="19"/>
+         <tile gid="20"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+         <tile gid="0"/>
+     </data>
+ </layer>
+ <objectgroup name="Aparicion" width="16" height="8">
+  <object name="Aparicion" type="1" x="1080" y="0" width="72" height="240">
+   <properties>
+    <property name="idConexion" value="3"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="Puerta" width="16" height="8">
+  <object name="Puerta_00" type="0" x="648" y="240" width="144" height="160">
+   <properties>
+    <property name="hash" value="4"/>
+    <property name="idConexion" value="6"/>
+    <property name="idDoor" value="3"/>
+    <property name="idKey" value="-1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="BarraMision" width="16" height="8">
+  <object name="BarraMision" type="Barra" x="575" y="561" width="288" height="80"/>
+ </objectgroup>
+ <objectgroup name="Letra" width="16" height="8">
+     <properties>
+         <property name="id" value="1"/>
+     </properties>
+  <object name="Letra_18" type="4" x="117" y="370" width="54" height="60">
+   <properties>
+    <property name="id" value="1"/>
+    <property name="idLetra" value="18"/>
+    <property name="sLetra" value="R"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="Herramienta" width="16" height="8">
+     <properties>
+         <property name="id" value="1"/>
+     </properties>
+  <object name="Herramienta_00" type="3" x="954" y="180" width="36" height="40">
+   <properties>
+    <property name="id" value="1"/>
+    <property name="idHerramienta" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

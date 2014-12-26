@@ -1,19 +1,19 @@
 //
-//  Scene.h
-//  DemoInduccion
+//  SceneView.h
+//  JuegoTequilero
 //
-//  Created by Max on 5/11/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __DemoInduccion__Scene__
-#define __DemoInduccion__Scene__
+#ifndef __JuegoTequilero__SceneView__
+#define __JuegoTequilero__SceneView__
 
 #include <iostream>
+
 #include "cocos2d.h"
 #include "ViewGame.h"
 #include "Input.h"
-#include "Player.h"
 #include "BackgroundGame.h"
 
 class SceneView: public cocos2d::Layer
@@ -35,4 +35,6 @@ public:
     
 };
 
-#endif /* defined(__DemoInduccion__Scene__) */
+
+
+#endif /* defined(__JuegoTequilero__SceneView__) */

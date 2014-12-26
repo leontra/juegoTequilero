@@ -1,13 +1,13 @@
 //
 //  Milliseconds.h
-//  gameTest00
+//  JuegoTequilero
 //
-//  Created by Max on 4/20/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __gameTest00__Milliseconds__
-#define __gameTest00__Milliseconds__
+#ifndef __JuegoTequilero__Milliseconds__
+#define __JuegoTequilero__Milliseconds__
 
 #include <iostream>
 
@@ -16,50 +16,43 @@
 class Milliseconds
 {
     
-    
 private:
     
-    float fMillisStart;
+    float _fMillisStart;
     
-    float fMillisCount;
+    int _fMillisCount;
     
+    float _iMillisCount;
     
-    bool bSeconds;
+    int _iMillisPlatformDuration;
     
+    bool _bSeconds;
+    
+    float fGetMilliCount();
+    
+    int iGetMilliCount ();
     
 public:
     
-    static float fGetMilliCount();
+    bool getSecCount ();
     
-    bool getSecCount();
+    float getCount ();
     
-    float getCount();
+    void startCounter ();
     
-    Milliseconds()
-    {
-        
-        fMillisStart = 0;
-        
-        fMillisCount = 0;
-        
-        bSeconds = false;
-        
-    }
+    float& getSecsCounter( );
     
-    ~ Milliseconds()
-    {
-        
-        
-        
-    }
+    int getMillisInterval (int iTimeInterval);
     
+    int getEveryMillis ();
     
+    void setPlatformDuration( const int& iDuration );
     
+    Milliseconds ();
+    
+    ~ Milliseconds();
     
 };
 
 
-
-
-
-#endif /* defined(__gameTest00__Milliseconds__) */
+#endif /* defined(__JuegoTequilero__Milliseconds__) */

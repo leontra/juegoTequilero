@@ -1,33 +1,30 @@
 //
 //  BackgroundGame.h
-//  DemoInduccion
+//  JuegoTequilero
 //
-//  Created by Max on 5/12/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __DemoInduccion__BackgroundGame__
-#define __DemoInduccion__BackgroundGame__
+#ifndef __JuegoTequilero__BackgroundGame__
+#define __JuegoTequilero__BackgroundGame__
 
 #include <iostream>
-
 #include "cocos2d.h"
 
 class BackgroundGame  :  public cocos2d::LayerColor
 {
     
-    
 private:
-    
-    
+    int _iBackgroundWidth;
     
 public:
     
     virtual bool init ();
     
+    int getBackgroundWidth ();
+    
     CREATE_FUNC( BackgroundGame );
-    
-    
 };
 
-#endif /* defined(__DemoInduccion__BackgroundGame__) */
+#endif /* defined(__JuegoTequilero__BackgroundGame__) */

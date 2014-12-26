@@ -1,36 +1,62 @@
 //
-//
 //  Input.h
-//  Game Prototype
+//  JuegoTequilero
 //
-//  Created by Max on 4/14/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __gameTest00__inputs__
-#define __gameTest00__inputs__
+#ifndef __JuegoTequilero__Input__
+#define __JuegoTequilero__Input__
 
 #include <iostream>
 
 #include "cocos2d.h"
 
 
-
 class Input : public cocos2d::Layer
 {
     
-    
 private:
     
-    static bool bLeft;
+    int _iButtonWidth;
+    int _iButtonHeight;
     
-    static bool bRight;
+    bool _bLastJump;
+    bool _bLastAction;
+    bool _bLastLeft;
+    bool _bLastRight;
     
-    static bool bAction;
+    int _iJumpTouch;
     
-    static bool bJump;
+    void initInput( cocos2d::Size visibleSize );
     
+    void initVariables( cocos2d::Size visibleSize );
     
+    cocos2d::EventListenerTouchOneByOne* getInputListener( );
+    
+    cocos2d::Sprite* getLeftButton( int& iButtonWidthPadding, int& iButtonHeightPadding);
+    
+    cocos2d::Sprite* getRightButton( int& iButtonWidthPadding, int& iButtonHeightPadding);
+
+    void initButtonsSprites (int& iButtonWidthPadding, int& iButtonHeightPadding);
+    
+    void beganTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    void endedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    void movedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    void cancelledTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    
+    void checkForTouchMoved( bool& bTouch, bool& bLastTouch );
+    
+    bool initilizeBeganTouch( cocos2d::Point& point, cocos2d::Touch* touch );
+    
+    void doMovedTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch );
+    
+    void doCancelledTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch );
+    
+    void testJump( cocos2d::Point& locationInNode );
+    
+    void testAction( cocos2d::Point& locationInNode );
     
 public:
     
@@ -40,35 +66,22 @@ public:
     
     float fWidth;
     
-    virtual bool init();
+    virtual bool init( );
     
     CREATE_FUNC(Input);
     
-    static bool touchLeft( );
+    bool touchLeft ();
     
-    static bool touchRight( );
+    bool touchRight ();
     
-    static bool touchAction( );
+    bool touchAction ();
     
-    static bool touchJump( );
+    bool touchJump ();
     
-    Input ()
-    {
-        
-        fDivisionWidth = 0;
-        
-        fDivisionHeight = 0;
-        
-        fWidth = 0;
-        
-    }
+    Input ();
     
-    ~Input ()
-    {
-        
-        
-    }
+    ~Input ();
     
 };
 
-#endif /* defined(__gameTest00__inputs__) */
+#endif /* defined(__JuegoTequilero__Input__) */

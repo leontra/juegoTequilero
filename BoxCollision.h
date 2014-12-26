@@ -1,50 +1,85 @@
 //
 //  BoxCollision.h
-//  gameTest00
+//  JuegoTequilero
 //
-//  Created by Max on 4/16/14.
+//  Created by Max on 7/11/14.
 //
 //
 
-#ifndef __gameTest00__BoxCollision__
-#define __gameTest00__BoxCollision__
+#ifndef __JuegoTequilero__BoxCollision__
+#define __JuegoTequilero__BoxCollision__
 
 #include <iostream>
+#include <vector>
 
 #include "cocos2d.h"
-
-
+#include "Vector.h"
+#include "Milliseconds.h"
 
 class BoxCollision
 {
     
+public:
+    
+    BoxCollision( );
+    BoxCollision( int& tileWidth, int& tileHeight, int& iMPoints, int& iNPoints, float& fGravedad, int* bCollisionX, int* bCollisionY, int* bTouchFloor, int* bTouchUp );
+    
+    void doMapping( const int& x, const int& y );
+    
+    void doCollisionWithRegularPlatforms( int* iX, int* iY, int& iWidth, int& iHeight, int& iVx, int* iVy, vector* vCollision );
+    void doCollisionWithBreakablePlatforms( int* iY, int& iHeight, int* iVy, vector* vCollision );
+    void doCollisionWithHardTopPlatforms( int* iY, int& iHeight, int* iVy, vector* vCollision );
+    void doCollisionWithHardBottomPlatforms( int* iY, int& iHeight, int* iVy, vector* vCollision );
+    
+    void resetValues( );
+    
+    ~BoxCollision( );
     
 private:
     
+	//void checkForCollisions( int* iX, int* iY, int& iVx, int* iVy, int& iWidth, int& iHeight, int& iVectorX, int& iVectorY );
     
+	void getValues( int* iVy );
     
-public:
+	void checkForRightCollision( int* iX, int& iVx, int& iWidth, int& iVectorX );
+	void checkForLeftCollision( int* iX, int& iVx, int& iWidth, int& iVectorX );
+	void checkForFloorCollision( int* iY, int* iVy, int& iHeight, int& iVectorY );
+    void checkForTopCollision( int* iY, int* iVy, int& iHeight, int& iVectorY );
     
-    static void checkCollision ( cocos2d::Sprite * platform, int &x, int &y, int &sumX, int &sumY, int &_pWidth, int &_pHeight, int &g, bool &horizontalLeft, bool &horizontalRight, bool &verticalPlus, bool &verticalMinus );
+	void testBreakablePlatformsCollisions( int* iY, int* iVy, int& iHeight, int& iVectorY );
+
+	void sumContador( );
     
+	Milliseconds* _oCronometro;
     
-    BoxCollision()
-    {
-        
-        
-    }
+private:
     
+    int _iMapping;
+    int _iLastMapping;
+    int _iTotalPoints;
+    int _aiSumaParaEncontrarTile[ 4 ];
+    int _iBreakPlatform;
     
-    ~BoxCollision()
-    {
-        
-        
-        
-    }
+    int& _lTileWidth;
+    int& _lTileHeight;
+    int& _iMPoints;
+    int& _iNPoints;
+    float _fGravedad;
     
+    int* _bCollisionX;
+    int* _bCollisionY;
+    int* _bTouchFloor;
+    int* _bTouchUp;
+    
+    int _iDuracionPlataforma;
+    int _iContador;
+    
+    int _iTempVy;
     
 };
 
 
 
-#endif /* defined(__gameTest00__BoxCollision__) */
+
+
+#endif /* defined(__JuegoTequilero__BoxCollision__) */
