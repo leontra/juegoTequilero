@@ -18,13 +18,10 @@ BarraMision::BarraMision ():
                                _iBarraHeight (0),
                                _barraSpriteFrame (0),
                                _iBarraPorcentaje (0)
-{
-    
-}
+{ }
 
 BarraMision::~BarraMision ()
-{
-}
+{ }
 
 bool BarraMision::init (cocos2d::TMXTiledMap& _tileMap)
 {
@@ -39,19 +36,17 @@ bool BarraMision::init (cocos2d::TMXTiledMap& _tileMap)
 
     sprite = cocos2d::Sprite::createWithSpriteFrame( _barraSpriteFrame );
     
-    sprite->setPosition(_posX, _posY);
+    sprite->setPosition( _posX, _posY );
     
     sprite->setAnchorPoint (Point (0, 0));
     
-    this->addChild (sprite, 0, 0);
+    this->addChild( sprite );
     
     return 1;
 }
 
 void BarraMision::initBarraFill( )
 {
-    _iBarraPorcentaje = 10;
-    
     _iBarraFill = ( _iBarraPorcentaje * _iBarraWidth ) / 100;
 }
 
@@ -83,11 +78,8 @@ void BarraMision::initVariablesBarra( cocos2d::TMXObjectGroup* group )
         auto properties = object.asValueMap( );
         
         _posX = properties.at( "x" ).asInt( );
-        
         _posY = properties.at( "y" ).asInt( );
-        
         _iBarraWidth = properties.at( "width" ).asInt();
-        
         _iBarraHeight = properties.at( "height" ).asInt();
     }
 }
@@ -109,6 +101,7 @@ void BarraMision::drawRectForBarra( )
     Rect rectBarra = Rect( _posX, _posY, _iBarraFill, _iBarraHeight );
     
     _barraSpriteFrame = cocos2d::SpriteFrame::create( "barraFill.png", rectBarra );
+    
 }
 
 void BarraMision::reverseBarraWith( int& iReverse )

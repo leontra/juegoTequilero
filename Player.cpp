@@ -38,10 +38,18 @@ Player::Player ():  _iX (0),
                     _iHeightTile (0),
                     _iMapWidth (0),
                     _bFlip (1),
-                    _iAnimState (0)
+                    _iAnimState (0),
+                    _bOutOfBoundries( 0 ),
+                    _iMapHeight( 0 ),
+                    _iFallAy( 0 )
 {
-    _oCollisionsPoints = new CollisionsPoints ();
-    _oCreateAnim = new CreateAnim ();
+    _oRegularPlatform = new RegularPlatform( );
+    _oBreakablePlatform = new BreakablePlatform( );
+    _oHardTopPlatform = new HardTopPlatform( );
+    _oHardBottomPlatform = new HardBottomPlatform( );
+    
+    _oCreateAnim = new CreateAnim( );
+    _oObstacles = new Obstacles( );
     
     //Inicializar los apuntadores de las posiciones en X y Y
     _iX = new int (1);
@@ -66,100 +74,105 @@ Player::~Player ()
     delete _bTouchUp;
     delete _iVy;
     delete _oBoxCollisions;
-    delete _oCollisionsPoints;
+    delete _oRegularPlatform;
+    delete _oObstacles;
     delete _oCreateAnim;
-    
+    delete _oBreakablePlatform;
+    delete _oHardTopPlatform;
+    delete _oHardBottomPlatform;
     this->destroyPlayer ();
 }
 
 
-bool Player::init (cocos2d::TMXTiledMap& _tileMap, float& fGravedad, std::string sPuerta, int& iMap)
+bool Player::init( cocos2d::TMXTiledMap& _tileMap, float& fGravedad, std::string sPuerta, int& iMap )
 {
-    if (!Layer::init())
+    if( !Layer::init( ) )
         return 0;
     
-    this->initPlayer (_tileMap, sPuerta);
+    this->initPlayer( _tileMap, sPuerta );
     
-    this->initObjects (_tileMap);
+    this->initObjects( _tileMap );
     
-    this->addChild (_spritePlayer,  0);
+    this->addChild( _spritePlayer,  0 );
     
     this->_fG = fGravedad;
     
     this->_iMap = iMap;
     
     //Hacer el update en milisegundos
-    this->schedule (schedule_selector (Player::pintarPlayer));
+    this->schedule( schedule_selector( Player::pintarPlayer ) );
     
     return 1;
 }
 
-void Player::initPlayer (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta)
+void Player::initPlayer( cocos2d::TMXTiledMap& _tileMap, std::string sPuerta )
 {
     //Inicializar la imagen del sprite del personaje
-    _spritePlayer = Sprite::create ("DonCuco_Idle.png");
+    _spritePlayer = Sprite::create( "DonCuco_Idle.png" );
     
     //Obtener el ancho y alto del sprite
-    _iPlayerWidth = _spritePlayer->getContentSize().width / 2;
-    _iPlayerHeight = _spritePlayer->getContentSize().height / 2;
+    _iPlayerWidth = _spritePlayer->getContentSize( ).width / 2;
+    _iPlayerHeight = _spritePlayer->getContentSize( ).height / 2;
+    
+    _iMapHeight = _tileMap.getContentSize( ).height;
+    _iMapWidth = _tileMap.getContentSize( ).width;
+    
+    //printf( "Mediad del tile map:  %d  --  %d\n", _iMapWidth, _iMapHeight );
     
     //Colocar el centro del player en el centro del sprite
-    _spritePlayer->setAnchorPoint (Point (0.5, 0.5));
+    _spritePlayer->setAnchorPoint( Point( 0.5f, 0.5f ) );
     
     //Inicilizar la animacion junto el numero de sprites y el numero de cuadros por segundo
     
     //Inicializar las animaciones del personaje
-    _oCreateAnim->initAnimations (_spritePlayer);
+    _oCreateAnim->initAnimations( _spritePlayer );
     
-    _oCreateAnim->runIdleAction (_spritePlayer);
+    _oCreateAnim->runIdleAction( _spritePlayer );
     
-    //Inicializar la posicion del sprite
-    this->initPosition (_tileMap, sPuerta);
 }
 
 void Player::initObjects (cocos2d::TMXTiledMap& _tileMap)
 {
     //Obtener los puntos de colision para las plataformas normales
-    _piCollisionPoints = _oCollisionsPoints->initCollisionPoints (_tileMap);
+    _oRegularPlatform->initPlatforms( _tileMap );
+    _oBreakablePlatform->initPlatforms( _tileMap );
+    _oHardBottomPlatform->initPlatforms( _tileMap );
+    _oHardTopPlatform->initPlatforms( _tileMap  );
     
-    //Obtener los puntos de colision para las plataformas transparentes
-    _piTransparentCollisionPoints = _oCollisionsPoints->initTransparentCollisionPoints (_tileMap);
+    _oObstacles->initObstacles( _tileMap, this );
     
     //Obtener el objeto estatico de la clase
     _oInput = new Input ();
     
     //Obtener el width de los tile
-    _iWidthTile = _oCollisionsPoints->getIWidth ();
+    _iWidthTile = _oRegularPlatform->getIWidth( );
     
-    _iHeightTile = _oCollisionsPoints->getIHeight ();
-    
-    _iMapWidth = _iWidthTile * _oCollisionsPoints->getMPoints ();
+    _iHeightTile = _oRegularPlatform->getIHeight( );
     
     //Inicializar la clase para las colisiones
-    _oBoxCollisions = new BoxCollision ( _iWidthTile, _iHeightTile, _oCollisionsPoints->getMPoints (), _oCollisionsPoints->getNPoints (), _fGravedad, _bCollisionX, _bCollisionY, _bTouchFloor, _bTouchUp);
+    _oBoxCollisions = new BoxCollision ( _iWidthTile, _iHeightTile, _oRegularPlatform->getMPoints( ), _oRegularPlatform->getNPoints( ), _fGravedad, _bCollisionX, _bCollisionY, _bTouchFloor, _bTouchUp);
 }
 
 //Update del objeto 60 por segundo
 void Player::pintarPlayer (float dt)
 {
-    this->resetValues ();
-    this->input ();
-    this->walk ();
-    this->resetJumpValues ();
-    this->checkForJump ();
-    this->checkForCollisions ();
-    this->constraint ();
-    this->sumGravity ();
-    this->checkForStateAnim ();
-    this->checkForFlip ();
+    this->resetValues( );
+    this->input( );
+    this->checkForBoundries( );
+    this->walk( );
+    this->resetJumpValues( );
+    this->checkForJump( );
+    this->checkForCollisions( );
+    this->constraint( );
+    this->sumGravity( );
+    this->checkForStateAnim( );
+    this->checkForFlip( );
     
-    this->movement ();
-	//this->cronometro();
-    
+    this->movement( );
 } // void update
 
 //Resetear los valores cada cuadro por segundo
-void Player::resetValues()
+void Player::resetValues( )
 {
     *_bCollisionX = 0;
     *_bCollisionY = 0;
@@ -171,58 +184,59 @@ void Player::resetValues()
     _bLeftTouch = 0;
     _bRightTouch = 0;
     _bActionTouch = 0;
+    _bOutOfBoundries = 0;
 }
 
 //Input del player
-void Player :: input ()
+void Player :: input( )
 {
-    if (_oInput->touchLeft ())
+    if( _oInput->touchLeft( ) )
         _bLeftTouch = 1;
     
-    if (_oInput->touchRight ())
+    if( _oInput->touchRight( ) )
         _bRightTouch = 1;
     
-    if (_oInput->touchAction ())
+    if( _oInput->touchAction( ) )
         _bActionTouch = 1;
     
-    if (_oInput->touchJump ())
+    if( _oInput->touchJump( ) )
         _bJumpTouch = 1;
     
 } // void input
 
 //Revisar si apreto la tecla de salto
-void Player::checkForJump ()
+void Player::checkForJump( )
 {
     //Revisar si el jugador está en el piso de nuevo, para que pueda volver a saltar
-    if (*_bCollisionY)
+    if( *_bCollisionY )
         *_bTouchFloor = 1;
     
     //Iniciar los valores para el brinco
-    if (!_fbJump && _bJumpTouch && *_bTouchFloor)
+    if( !_fbJump && _bJumpTouch && *_bTouchFloor )
     {
-        _fAy = 180;
+        _fAy = 160;
         _fbJump = 1;
         *_bTouchFloor = 0;
     }
     
     //Revisar si se apreto el botón de salto
-    if (_fbJump)
-        this->jump ();
+    if( _fbJump )
+        this->jump( );
 }
 
 //Colocar los valores para realizar el brinco
-void Player::jump ()
+void Player::jump( )
 {
-    _fAy -= (6 * _fTiempo);
-    _fAy = ((_fAy / 4)) > 0 ? _fAy : 0;
+    _fAy -= ( 6 * _fTiempo );
+    _fAy = ( ( _fAy / 4 ) ) > 0 ? _fAy : 0;
     *_iVy = _fAy / 4;
     //printf ("\nLa desaceleracion es:   %f\n", _fAy);
 }
 
 //Resetear los valores al tocar techo
-void Player::resetJumpValues ()
+void Player::resetJumpValues( )
 {
-    if (*_bTouchUp || _fAy <= 0)
+    if( *_bTouchUp || _fAy <= 0 )
     {
         *_bTouchUp = 0;
         _fbJump = 0;
@@ -231,50 +245,50 @@ void Player::resetJumpValues ()
 }
 
 //Metodo para hacerle la suma a la velocidad en caso de haber apretado los botones de movimiento
-void Player::walk ()
+void Player::walk( )
 {
     //Definir la velocidad
     int iVx = 6;
     
-    if (_bLeftTouch)
+    if( _bLeftTouch )
         _iVx = -iVx;
     
-    if (_bRightTouch)
+    if( _bRightTouch )
         _iVx =  iVx;
     
-    if (_bLeftTouch && _bRightTouch)
+    if( _bLeftTouch && _bRightTouch )
         _iVx = 0;
 }
 
 //Metodo para mantener al jugador dentro de la pantalla, hace un constrain en X y Y
-void Player::constraint ()
+void Player::constraint( )
 {
-    if (!_iMap)
-        this->constraintXLeft ();
+    if( !_iMap )
+        this->constraintXLeft( );
     //this->constraintXRight ();
-    this->constraintY ();
+    this->constraintY( );
 }
 
-void Player::constraintXLeft ()
+void Player::constraintXLeft( )
 {
     //Hacer el constraint del lado izquierdo de la pantalla
-    if ((*_iX - _iPlayerWidth + _iVx) < 0)
+    if( ( *_iX - _iPlayerWidth + _iVx ) < 0 )
     {
-        int iResta = (*_iX - _iPlayerWidth + _iVx);
+        int iResta = ( *_iX - _iPlayerWidth + _iVx );
         *_iX += _iVx;
         *_iX -= iResta;
         *_bCollisionX = 1;
     }
 }
 
-void Player::constraintXRight ()
+void Player::constraintXRight( )
 {
-    Size visibleSize = Director::getInstance ()->getVisibleSize ();
+    Size visibleSize = Director::getInstance( )->getVisibleSize( );
     
     //Hacer el constraint del lado derecho de la pantalla
-    if ((*_iX + _iPlayerWidth + _iVx) > visibleSize.width)
+    if( ( *_iX + _iPlayerWidth + _iVx ) > _iMapWidth )
     {
-        int iResta = (*_iX + _iPlayerWidth + _iVx) - visibleSize.width;
+        int iResta = ( *_iX + _iPlayerWidth + _iVx ) - visibleSize.width;
         *_iX += _iVx;
         *_iX -= iResta;
         *_bCollisionX = 1;
@@ -282,41 +296,50 @@ void Player::constraintXRight ()
 }
 
 //Hcer el constrain hacia abajo de la pantalla
-void Player::constraintY ()
+void Player::constraintY( )
 {
-	if (*_iY <= -_iPlayerHeight && !_fbJump)
+	if( *_iY <= -_iPlayerHeight && !_fbJump )
     {
-		Player::setInitialValues (_iFallx, _iFally);
+		Player::setInitialValues( _iFallx, _iFally );
     }
 }
 
-//Metodo para restarle la gravedad a la posicion en Y
-void Player::sumGravity ()
+void Player::checkForBoundries( )
 {
-    if (*_bCollisionY || _fAy > 0)
+    if( *_iY <= -_iPlayerHeight || *_iY + _iPlayerHeight > _iMapHeight )
+        _bOutOfBoundries = 1;
+    
+    if( *_iX - _iPlayerWidth < 0 || *_iX + _iPlayerWidth > _iMapWidth )
+        _bOutOfBoundries = 1;
+}
+
+//Metodo para restarle la gravedad a la posicion en Y
+void Player::sumGravity( )
+{
+    if( *_bCollisionY || _fAy > 0 )
     {
         _fGravedad = 0;
     }
 }
 
-void Player::checkForFlip ()
+void Player::checkForFlip( )
 {
-    if (_bRightTouch)
+    if( _bRightTouch )
         _bFlip = 1;
-    else if (_bLeftTouch)
+    else if( _bLeftTouch )
         _bFlip = 0;
     
-    this->doFlipWith (_bFlip);
+    this->doFlipWith( _bFlip );
 }
 
 //Sumar las velocidades en Y y X, hacer el update al sprite con las nuevas posiciones
-void Player::movement ()
+void Player::movement( )
 {
     *_iY += *_iVy;
     
     *_iY -= _fGravedad;
     
-    if (!*_bCollisionX)
+    if( !*_bCollisionX )
     {
         *_iX += _iVx;
     }
@@ -330,6 +353,13 @@ void Player::setInitialValues (int posX, int posY)
 {
     *_iX = posX;
     *_iY = posY;
+    _fAy = _iFallAy;
+    if( _fAy > 0 )
+    {
+        _fbJump = 1;
+    }
+    else
+        *_bTouchFloor = 1;
     
     this->updatePlayerSprite (*_iX, *_iY);
 }
@@ -352,6 +382,26 @@ int* Player::getPosY ()
     return _iY;
 }
 
+float Player::getXMax( )
+{
+    return *_iX - _iPlayerWidth;
+}
+
+float Player::getYMax( )
+{
+    return *_iY - _iPlayerHeight;
+}
+
+float Player::getXMin( )
+{
+    return *_iX + _iPlayerWidth;
+}
+
+float Player::getYMin( )
+{
+    return *_iY + _iPlayerHeight;
+}
+
 //Obtener los valores desde afuera
 void Player::getAllValues (int& iX, int& iY, int& iWidth, int& iHeight, bool& bActionTouch, int& iWidthTile)
 {
@@ -365,16 +415,40 @@ void Player::getAllValues (int& iX, int& iY, int& iWidth, int& iHeight, bool& bA
 
 void Player::checkForCollisions ()
 {
-    //Colisiones con las plataformas normales
-    _oBoxCollisions->doCollisionWith (_iX, _iY, _iPlayerWidth, _iPlayerHeight, _iVx, _iVy, _piCollisionPoints);
+    _oBoxCollisions->doMapping( *_iX, *_iY );
     
-    //Colisiones con las plataformas transparentes, solo si existen en el mapa
-    if (_piTransparentCollisionPoints)
-        _oBoxCollisions->doCollisionWithTransparentPlatform (_iX, _iY, _iPlayerWidth, _iPlayerHeight, _iVx, _iVy, _piTransparentCollisionPoints);
+    _oBoxCollisions->doCollisionWithRegularPlatforms( _iX, _iY, _iPlayerWidth, _iPlayerHeight, _iVx, _iVy, _oRegularPlatform->getPlatformsPoints( ) );
+    
+    if( _oBreakablePlatform->getSize( ) )
+        _oBoxCollisions->doCollisionWithBreakablePlatforms( _iY, _iPlayerHeight, _iVy, _oBreakablePlatform->getPlatformsPoints( ) );
+    
+    if( _oHardTopPlatform->getSize( ) )
+        _oBoxCollisions->doCollisionWithHardTopPlatforms( _iY, _iPlayerHeight, _iVy, _oHardTopPlatform->getPlatformsPoints( ) );
+    
+   if( _oHardBottomPlatform->getSize( ) )
+      _oBoxCollisions->doCollisionWithHardBottomPlatforms( _iY, _iPlayerHeight, _iVy, _oHardBottomPlatform->getPlatformsPoints( ) );
+    
+    if( _oObstacles->testObstaclesCollisions( getXMax( ), getYMax( ), getXMin( ), getYMin( ) ) )
+        setInitialValues( _iFallx, _iFally );
+}
+
+//Posicion inicial al entrar a un nuevo cuarto
+void Player::setPlayerRoomPosition( const int& _x, const int& _y )
+{
+    this->setInitialValues( _x, _y );
+    _iFallx = _x;
+    _iFally = _y;
+    //_iFallAy = _fAy;
+}
+
+void Player::getPlayerSize( int& _width, int& _height )
+{
+    _width = _iPlayerWidth;
+    _height = _iPlayerHeight;
 }
 
 //Inicilizar posicion del jugador, de acuerdo al tile map
-void Player::initPosition (cocos2d::TMXTiledMap& _tileMap, std::string sPuerta)
+void Player::initPosition( cocos2d::TMXTiledMap& _tileMap, std::string sPuerta )
 {
     //Obtener los diferentes objetos contenidos en el xml
     auto tileGroups = _tileMap.getObjectGroups ();
@@ -433,11 +507,11 @@ void Player::doFlipWith (int& _bFlip)
 {
     if (_bFlip)
     {
-        _spritePlayer->setScaleX (1);
+        _spritePlayer->setScaleX( 1 );
     }
     else
     {
-        _spritePlayer->setScaleX (-1);
+        _spritePlayer->setScaleX( -1 );
     }
 }
 
@@ -502,14 +576,18 @@ void Player::resetPosition ()
     *_bCollisionY = 0;
     *_bCollisionX = 0;
     _bFlip = 1;
+    _iFallAy = _fAy;
 }
 
 //Destruir los objetos
 void Player::destroyObjects ()
 {
-    _oCollisionsPoints->deleteArray ();
-    
-    _oBoxCollisions->resetValues ();
+    _oRegularPlatform->resetArray( );
+    _oBoxCollisions->resetValues( );
+    _oBreakablePlatform->resetArray( );
+    _oHardBottomPlatform->resetArray( );
+    _oHardTopPlatform->resetArray( );
+    _oObstacles->resetObstacles( );
     
     _oInput = 0;
 }
@@ -519,5 +597,6 @@ void Player::cronometro()
 	_fcronometro ++;
 	if (_fcronometro == 1250){
 		Player::setInitialValues(_iFallx, _iFally); _fcronometro = 0; }
-	
 }
+
+

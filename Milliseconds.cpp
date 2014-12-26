@@ -9,10 +9,11 @@
 #include "Milliseconds.h"
 
 
-Milliseconds::Milliseconds (): _fMillisStart (0),
-                                 _iMillisCount (0),
-                                 _fMillisCount (0),
-                                 _bSeconds (0)
+Milliseconds::Milliseconds ():   _fMillisStart (0),
+                                            _iMillisCount (0),
+                                            _fMillisCount (0),
+                                            _bSeconds (0),
+                                            _iMillisPlatformDuration( 0 )
 {
 }
 
@@ -22,13 +23,15 @@ Milliseconds::~Milliseconds ()
 
 float Milliseconds::fGetMilliCount ( )
 {
-    timeval time;
+    time_t rawtime;
+    struct tm * timeinfo;
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+
+    //gettimeofday( &time,  0 );
+    //long double millisecs = (time.tv_sec * 1000) + (time.tv_usec  /  1000);
     
-    gettimeofday( &time,  0 );
-    
-    long double millisecs = (time.tv_sec * 1000) + (time.tv_usec  /  1000);
-    
-    return (float) millisecs;
+    return (float) timeinfo->tm_sec;
     
 } // float getMilliCount
 
@@ -41,16 +44,20 @@ int Milliseconds::iGetMilliCount ()
     return millis;
 }
 
-
-bool Milliseconds::getSecCount ()
+void Milliseconds::setPlatformDuration( const int& iDuration )
 {
-    if (!_bSeconds)
+    _iMillisPlatformDuration = iDuration;
+}
+
+bool Milliseconds::getSecCount( )
+{
+    if( !_bSeconds )
     {
-        _fMillisStart = this->fGetMilliCount ();
+        _fMillisStart = this->fGetMilliCount( );
         _bSeconds = 1;
     }
     
-    if ((fGetMilliCount () - _fMillisStart) >= 1000)
+    if( ( fGetMilliCount( ) - _fMillisStart ) >= 1 )
     {
         _bSeconds = 0;
         return 1;
@@ -74,7 +81,9 @@ float Milliseconds::getCount ()
     return (this->fGetMilliCount () - _fMillisStart);
 }
 
-float& Milliseconds::getSecsCounter ()
+
+
+float& Milliseconds::getSecsCounter( )
 {
     if (!_bSeconds)
     {

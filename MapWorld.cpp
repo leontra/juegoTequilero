@@ -14,10 +14,8 @@
 USING_NS_CC;
 
 MapWorld::MapWorld (): _tileMap (0),
-                       _fGravedad (0)
-{
-    
-}
+                                    _fGravedad (0)
+{ }
 
 MapWorld::~MapWorld ()
 {
@@ -28,7 +26,6 @@ MapWorld::~MapWorld ()
 
 TMXTiledMap* MapWorld::mapTileXML (float fGravedad, int& iMapIndex)
 {
-    
     //std::string sPrefixMapa = "/Escenas/";
     
     //Prefijo del nombre de los mapas
@@ -73,8 +70,6 @@ float& MapWorld::getFGravedad ()
 
 void MapWorld::destroyMap ()
 {
-    //_tileMap->release();
     _tileMap = 0;
-    
 }
 

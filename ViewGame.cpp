@@ -14,146 +14,156 @@
 
 USING_NS_CC;
 
-ViewGame::ViewGame():
-                        _piResourcePoints (0),
-                        _bfStart (0),
-                        _iMapIndex (0),
-                        _orPuertasPoints (0),
-                        _iPx (0),
-                        _iPy (0),
-                        _iPWidth (0),
-                        _iPHeight (0),
-                        _bChangeScene (0),
-                        _bInicio (0),
-                        _iAvanzoRetrocedio (0),
-                        _sPuerta ("Entrada"),
-                        _bActionTouch (0),
-                        _iMapWidth (0),
+ViewGame::ViewGame( ):
+                        _bfStart( 0 ),
+                        _iPx( 0 ),
+                        _iPy( 0 ),
+                        _iPWidth( 0 ),
+                        _iPHeight( 0 ),
+                        _bChangeScene( 0 ),
+                        _bInicio( 0 ),
+                        _iAvanzoRetrocedio( 0 ),
+                        _sPuerta( "Entrada" ),
+                        _bActionTouch( 0 ),
+                        _iMapWidth( 0 ),
                         _fPauseLeft( 0 ),
                         _fPauseRight( 0 ),
                         _bPauseLeft( 0 ),
                         _bPauseRight( 0 ),
                         _bStartTouchLeft( 0 ),
                         _bStartTouchRight( 0 ),
-                        _bPause( 0 )
+                        _bPause( 0 ),
+                        _bDoorCollision( 0 ),
+                        _bText( 0 ),
+                        _bFilosofiaInitialText( 0 ),
+                        _bDoorMissText( 0 )
 {
-    _oMap = new MapWorld ();
-    _oResource = new Resource ();
-    _oPlayer = new Player ();
-    _oPuertas = new Resource ();
-    _oDrawRecursos = new DrawRecursos ();
-    _oBarraMision = new BarraMision ();
+    _oMap = new MapWorld( );
+    _oResource = new Resource( );
+    _oPlayer = new Player( );
+    _oPuertas = new Resource( );
+    _oBarraMision = new BarraMision( );
     _oMilliseconds = new Milliseconds;
     _oAudioEngine = CocosDenshion::SimpleAudioEngine::getInstance( );
+    _oRoomExit = new RoomExit( );
+    _oDoors = new Doors( );
+    _oMates = new Mates( );
+    _oFilosofia = new FilosofiaIntroduction( );
     
-    _bInicio = new int (1);
+    _bInicio = new int( 1 );
 }
 
-ViewGame::~ViewGame()
+ViewGame::~ViewGame( )
 {
-    this->roomDeconstructor ();
+    this->roomDeconstructor( );
     delete _oMap;
     delete _oResource;
     delete _oPuertas;
     delete _oPlayer;
-    delete _oDrawRecursos;
     delete _bInicio;
     delete _oMilliseconds;
     delete _oBarraMision;
+    delete _oRoomExit;
+    delete _oDoors;
+    delete _oFilosofia;
+    delete _oMates;
 }
 
-bool ViewGame::init ()
+bool ViewGame::init( )
 {
-    if (!Layer::init())
+    if ( !Layer::init( ) )
         return 0;
     
-    //Escalar el tile map
-    //_tileMap->setScale(1);
+    _oAudioEngine->preloadEffect( "BackGround_00.wav" );
     
-    _oAudioEngine->preloadEffect ("GoDogeGo.wav");
-    
-    _iMapIndex = 0;
-    
-    this->roomConstructor ();
-    
-    this->pauseGameInput ();
-    
-    this->schedule (schedule_selector (ViewGame::update));
+    this->roomConstructor( );
+    this->pauseGameInput( );
+    this->schedule( schedule_selector( ViewGame::update ) );
     
     return 1;
 }
 
 void ViewGame::roomConstructor ()
 {
-   //if (!_iMapIndex)
-        _oAudioEngine->playBackgroundMusic( "GoDogeGo.wav" );
-    /*
-    if (_iMapIndex == 1)
-        _oAudioEngine->playBackgroundMusic ("astralObservatory.mp3");
-    if (_iMapIndex == 2)
-        _oAudioEngine->playBackgroundMusic ("oathToOrder.mp3");
-	*/
-    
     //Inicializar la gravedad para el mundo
-    float fGravedad = 9.0;
+    float fGravedad = 7.0f;
     
-    //Asignar xml y darle un valor a la gravedad del mundo
-    this->_tileMap = _oMap->mapTileXML (fGravedad, _iMapIndex);
+    int mapIndex = 0;
+    //Obtener el numero de mapa
+    if( _bDoorCollision )
+        mapIndex = _oDoors->getNextRoomIndex( );
     
-    //Inicializar al player
-    _oPlayer->init (*_tileMap, _oMap->getFGravedad(), _sPuerta, _iMapIndex);
+    else
+        mapIndex = _oRoomExit->getMapIndex( );
     
-    //Obtener los puntos de colision para los recursos
-    _piResourcePoints = _oResource->initResources ( *_tileMap );
+    if( mapIndex ) _bFilosofiaInitialText = 1;
     
-    //Obtener los puntos de las puertas en el mapa
-    //_orPuertasPoints = _oPuertas->initResources (*_tileMap);
     
-    //Inicializar las colisiones para las puertas
-	_oPuertasBoxCollision = new PuertasBoxCollision(_iMapIndex, _oResource->getNRecursos(), _bInicio);
+    if( mapIndex % 2 == 0 )
+        _oAudioEngine->playBackgroundMusic( "BackGround_00.wav", 1 );
+    else
+        _oAudioEngine->playBackgroundMusic( "BackGround_02.wav", 1 );
     
-    //Inilizar la barra de mision
-    _oBarraMision->init (*_tileMap);
     
-    //Inicilizar el layer de los recursos
-    _oResource->init ();
+    //Asignar TileMap y darle un valor a la gravedad del mundo
+    this->_tileMap = _oMap->mapTileXML( fGravedad, mapIndex );
     
-    //Obtener el numero de recursos por mapa para hacer la iteracion
-    int iNRecursos = _oResource->getNRecursos ();
+    if( !mapIndex )
+    {
+        _oFilosofia->InitializeFilosofia( this );
     
-    //Pasar el numero de recursos por mapa para las colisiones y pintarlos
-    _oDrawRecursos->setNRecursos (iNRecursos);
+        if( _bFilosofiaInitialText )
+            _oFilosofia->setFilosofiaCompleteText( );
+    }
     
-    addChild (_tileMap, 0, 0);
+    if( mapIndex )
+        ResourcesBuffer::GetInstance( )->setLettersTest( 1 );
     
-    addChild (_oBarraMision, 0, 0);
+    _oRoomExit->initExits( *_tileMap );
     
-    addChild (_oPlayer, 0, 0);
+    _oPlayer->init( *_tileMap, _oMap->getFGravedad( ), _sPuerta, mapIndex );
+    _oPlayer->getPlayerSize( _iPWidth, _iPHeight );
     
-    addChild (_oResource, 0, 0);
+    _oDoors->initDoors( mapIndex, this );
+    _oMates->initMates( mapIndex, this );
     
+    //Obtener la posicion inicial, ya sea de una puerta o de la continuacion del mapa
+    if( _bDoorCollision )
+        _oDoors->getPlayerInitialPosition( _iPx,  _iPy, _iPWidth, _iPHeight );
+    else
+        _oRoomExit->getPlayerInitialPosition( _iPx,  _iPy, _iPWidth, _iPHeight );
+    
+    _oPlayer->setPlayerRoomPosition( _iPx, _iPy );
+    
+    _oResource->init( );
+    
+
+    
+    _oBarraMision->init( *_tileMap );
+    
+    _oResource->initResourcesRoom( mapIndex );
+    
+    addChild( _tileMap, 0, 0 );
+    addChild( _oBarraMision, 0, 0 );
+    addChild( _oResource, 0, 0 );
+    addChild( _oPlayer, 0, 0 );
+    _bDoorCollision = 0;
 }
 
 //Resetear valores para volverlos a construir
-void ViewGame::roomDeconstructor ()
+void ViewGame::roomDeconstructor( )
 {
-    _oMap->destroyMap ();
-    
-    _oPlayer->destroyPlayer ();
-    
-    _oResource->deleteArray ();
-    
-    _piResourcePoints = 0;
-    
-    _oPuertasBoxCollision->resetValues();
-    
-    _orPuertasPoints = 0;
-    
+    _bChangeScene = 1;
+    _oAudioEngine->stopBackgroundMusic( );
+    _oMap->destroyMap( );
+    _oPlayer->destroyPlayer( );
+    _oResource->resetArrays( );
     _oBarraMision->deleteBarra( );
+    _oRoomExit->resetRoom( );
+    _oDoors->resetDoors( );
+    _oMates->resetMates( );
     
-    delete _oPuertasBoxCollision;
-    
-    removeAllChildren ();
+    removeAllChildren( );
 }
 
 void ViewGame::update( float dt )
@@ -171,34 +181,34 @@ void ViewGame::update( float dt )
     _bPauseLeft = _bPauseRight = 0;
     
     //Revisar si se cambio de escena para construirla
-    if (_bChangeScene)
-        this->createScene ();
+    if( _bChangeScene )
+        this->createScene( );
     else
-        this->updatePuertasRecursos ();
+        this->updatePuertasRecursos( );
 }
 
-void ViewGame::createScene ()
+void ViewGame::createScene( )
 {
     _bChangeScene = 0;
     *_bInicio = 1;
-    this->roomConstructor ();
+    this->roomConstructor ( );
 }
 
-void ViewGame::updatePuertasRecursos ()
+void ViewGame::updatePuertasRecursos( )
 {
-    _oPlayer->getAllValues (_iPx, _iPy, _iPWidth, _iPHeight, _bActionTouch, _iMapWidth);
-    this->checkForCollisionWithRecursosAndPaintThem ();
-    this->checkForCollisionWithPuertas ();
+    _oPlayer->getAllValues( _iPx, _iPy, _iPWidth, _iPHeight, _bActionTouch, _iMapWidth );
+    this->testObjectsCollisions( );
+    this->checkForCollisionWithPuertas( );
 }
 
-void ViewGame::checkForCollisionWithPuertas ()
+void ViewGame::checkForCollisionWithPuertas( )
 {
     //Entero temporal, para saber si se movio de escena
-    int iTempMapIndex = -1;
+    //int iTempMapIndex = -1;
     
-    int iPrevMapIndex = _iMapIndex;
+    //int iPrevMapIndex = _iMapIndex;
     
-    
+    /*
     //Hacer las colisiones para el principio, hasta que el jugador salga de la puerta
     if (*_bInicio)
 		_oPuertasBoxCollision->doStartCollisionsWith (_iPx, _iPy, _iPWidth, _iPHeight, _piResourcePoints, _sPuerta);
@@ -209,6 +219,7 @@ void ViewGame::checkForCollisionWithPuertas ()
     
 	if (iTempMapIndex >= 0)
 		this->changeScene(iPrevMapIndex);
+    */
     
 	/*if (_sPuerta == ("PuertaSalida")){
      _iMapIndex = 2;
@@ -216,44 +227,122 @@ void ViewGame::checkForCollisionWithPuertas ()
      if (_sPuerta == ("PuertaEntrada")){
      _iMapIndex = 0;
      }*/
+    
     //Revisar que haya alcanzado una puerta
 	
     //Obtener el numero de mapa que sigue
-	iTempMapIndex = _oPuertasBoxCollision->doCollisionWithSidesToExit (_iPx, _iPy, _iPWidth, _iPHeight, _piResourcePoints, _iMapIndex, _sPuerta, _iMapWidth);
+	/*
+    iTempMapIndex = _oPuertasBoxCollision->doCollisionWithSidesToExit ( _iPx, _iPy, _iPWidth, _iPHeight, _piResourcePoints, _iMapIndex, _sPuerta, _iMapWidth );
 	
     if (iTempMapIndex >= 0 )
         this->changeScene (iPrevMapIndex);
+    */
+    
+    if( _oFilosofia->testIfItIsTheRoom( ) && !_bFilosofiaInitialText )
+    {
+        _oFilosofia->testFilosofiaText( _iPx );
+    }
+    
+    if( _oRoomExit->testExitCollision( _iPx, _iPy, _iPWidth, _iPHeight ) )
+        this->roomDeconstructor( );
+    
+}
+
+void ViewGame::testObjectsCollisions( )
+{
+    if( testResourcesCollisions( ) ) return;
+    if( testMatesCollision( ) ) return;
+    if( testDoorsCollision( ) ) return;
 }
 
 //Revisar las colisiones con los recursos ademas de pintarlos en la pantalla
-void ViewGame::checkForCollisionWithRecursosAndPaintThem( )
+bool ViewGame::testResourcesCollisions( )
 {
-    int iUpgrade = 20;
+    int iUpgrade = 0;
     
-    if ( _oDrawRecursos->doCollisionsWith( _iPx, _iPy, _iPWidth, _iPHeight, _piResourcePoints ) == 1 )
+    iUpgrade = _oResource->testResourcesCollisions( _oPlayer->getXMax( ), _oPlayer->getYMax( ), _oPlayer->getXMin( ), _oPlayer->getYMin( ) );
+    if( iUpgrade )
+    {
         _oBarraMision->upgradeBarraWith( iUpgrade );
+        return 1;
+    }
+
+    return 0;
+}
+
+bool ViewGame::testMatesCollision( )
+{
+    if( _bActionTouch )
+    {
+        if( !_bText )
+        {
+            int iUpgrade = _oMates->testMatesCollisions( _iPx, _iPy, this );
+            if( iUpgrade != 0 ) _bText = 1;
+            if( iUpgrade > 0 )
+            {
+                _oBarraMision->upgradeBarraWith( iUpgrade );
+                return 1;
+            }
+            
+            if( iUpgrade == -2 ) return 1;
+        }
+    }
+    
+    if( _bText )
+    {
+        if( _oMates->testRemoveText( _iPx, _iPy,  this ) )
+            _bText = 0;
+    }
+    
+    return 0;
+}
+
+bool ViewGame::testDoorsCollision( )
+{
+    if( _bActionTouch && !_bDoorMissText )
+    {
+        int iUpgradeDoor = _oDoors->testDoorsCollisions( _oPlayer->getXMax( ), _oPlayer->getYMax( ), _oPlayer->getXMin( ), _oPlayer->getYMin( ) );
+        
+        if( iUpgradeDoor == -2 )
+        {
+            _bDoorMissText = 1;
+            return 1;
+        }
+        
+        if( iUpgradeDoor > 0 ) _oBarraMision->upgradeBarraWith( iUpgradeDoor );
+        
+        if( iUpgradeDoor != 0 && iUpgradeDoor != -2 )
+        {
+            _bDoorCollision = 1;
+            //Cambiar de mapa, por la puerta
+            this->roomDeconstructor( );
+            return 1;
+        }
+
+    }
+    
+    if( _bDoorMissText )
+    {
+        if( _oDoors->testRemoveText( _iPx, _iPy ) )
+            _bDoorMissText = 0;
+    }
+    return 0;
 }
 
 //Metodo para cambiar de escena una vez alcanzado la puerta
-void ViewGame::changeScene(int& iPrevMapIndex)
+void ViewGame::changeScene( int& iPrevMapIndex )
 {
 	this->roomDeconstructor();
 	_bChangeScene = 1;
 	if (_sPuerta == ("Entrada"))
-        _sPuerta = this->chooseADoor(iPrevMapIndex);
+        _sPuerta = this->chooseADoor( iPrevMapIndex );
 	
     iPrevMapIndex = 0;
 }
 
-std::string ViewGame::chooseADoor (int& iPrevMapIndex)
+std::string ViewGame::chooseADoor( int& iPrevMapIndex )
 {
     std::string sReturn = "Entrada";
-    
-    if (iPrevMapIndex > _iMapIndex)
-        sReturn = "Salida";
-    
-    if (iPrevMapIndex < _iMapIndex)
-        sReturn = "Entrada";
     
     return sReturn;
 }
@@ -308,6 +397,7 @@ void ViewGame::beganTouch( cocos2d::EventListenerTouchOneByOne* listenerPause )
         Size visibleSize = Director::getInstance( )->getVisibleSize( );
         
         Rect rectPauseLeft = Rect( 0, 0, visibleSize.width / 2, visibleSize.height );
+        
         Rect rectPauseRight = Rect( visibleSize.width / 2, 0, visibleSize.width / 2, visibleSize.height );
         
         if( rectPauseLeft.containsPoint( locationInNode ) && !_bStartTouchLeft && ( _bStartTouchLeft = 1 ) )

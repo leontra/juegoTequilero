@@ -13,6 +13,9 @@
 #include "cocos2d.h"
 #include "Button.h"
 #include "PlayScene.h"
+#include "GameBuffering.h"
+#include "SimpleAudioEngine.h"
+#include "Sounds.h"
 
 class InitialMenu : public cocos2d::LayerColor
 {
@@ -21,6 +24,9 @@ private:
     
     bool _bEnterInput;
     
+    GameBuffering* _oGameBuffering;
+    Sounds* _oEffect;
+    
     void createStartButton( );
     void createStartLabel( );
     void createTextLabel( );
@@ -28,7 +34,7 @@ private:
     void inputBegan( cocos2d::EventListenerTouchOneByOne* listenerInput );
     void inputMoved( cocos2d::EventListenerTouchOneByOne* listenerInput );
     void inputEnded( cocos2d::EventListenerTouchOneByOne* listenerInput );
-    
+    CocosDenshion::SimpleAudioEngine* _oAudioEngine;
     void update (float dt);
     
 public:
@@ -38,6 +44,7 @@ public:
     virtual bool init( );
     
     ~InitialMenu( );
+    
     
     void menuCloseCallback( cocos2d::Ref* pSender );
     

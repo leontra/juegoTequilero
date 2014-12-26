@@ -14,78 +14,38 @@
 #include "cocos2d.h"
 
 #include "Player.h"
-
 #include "MapWorld.h"
-
 #include "Resources.h"
-
-#include "Puertas.h"
-
-#include "PuertasBoxCollision.h"
-
-#include "DrawRecursos.h"
-
 #include "BarraMision.h"
-
 #include "SimpleAudioEngine.h"
-
 #include "Milliseconds.h"
-
 #include "PauseGame.h"
-
-
+#include "RoomExit.h"
+#include "Doors.h"
+#include "Mates.h"
+#include "FilosofiaIntroduction.h"
 
 
 class ViewGame: public cocos2d::Layer
 {
+public:
+    
+    ViewGame ();
+    ~ViewGame ();
+    
+    bool init ();
+    
+    CREATE_FUNC( ViewGame );
+    
+    
 private:
     
-    bool _bfStart;
-    bool _bChangeScene;
-    bool _bActionTouch;
-    
-    bool _bPauseLeft;
-    bool _bPauseRight;
-    bool _bStartTouchLeft;
-    bool _bStartTouchRight;
-    bool _bPause;
-    
-    float _iStartSeconds;
-    
-    CocosDenshion::SimpleAudioEngine* _oAudioEngine;
-    
-    int* _bInicio;
-    
-    int _iMapIndex;
-    int _iPx;
-    int _iPy;
-    int _iPWidth;
-    int _iPHeight;
-    int _iAvanzoRetrocedio;
-    int _iMapWidth;
-    
-    float _fPauseLeft;
-    float _fPauseRight;
-    
-    std::string _sPuerta;
-    
-    MapWorld* _oMap;
-    Resource* _oResource;
-    Player* _oPlayer;
-    Resource* _oPuertas;
-    PuertasBoxCollision* _oPuertasBoxCollision;
-    DrawRecursos* _oDrawRecursos;
-    BarraMision* _oBarraMision;
-    Milliseconds* _oMilliseconds;
-    
-    objectResource* _piResourcePoints;
-    objectResource* _orPuertasPoints;
-    
-    cocos2d::TMXTiledMap* _tileMap;
-    
     void update (float dt);
-    void checkForCollisionWithPuertas ();
-    void checkForCollisionWithRecursosAndPaintThem ();
+    void checkForCollisionWithPuertas( );
+    void testObjectsCollisions( );
+    bool testResourcesCollisions( );
+    bool testMatesCollision( );
+    bool testDoorsCollision( );
     void roomConstructor ();
     void roomDeconstructor ();
     void changeScene (int& iPrevMapIndex);
@@ -105,15 +65,56 @@ private:
     
     std::string chooseADoor( int& iPrevMapIndex );
     
-public:
     
-    ViewGame ();
+private:
     
-    ~ViewGame ();
+    bool _bfStart;
+    bool _bChangeScene;
+    bool _bActionTouch;
     
-    bool init ();
+    bool _bPauseLeft;
+    bool _bPauseRight;
+    bool _bStartTouchLeft;
+    bool _bStartTouchRight;
+    bool _bPause;
     
-    CREATE_FUNC( ViewGame );
+    bool _bText;
+    
+    bool _bDoorCollision;
+    
+    float _iStartSeconds;
+    
+    CocosDenshion::SimpleAudioEngine* _oAudioEngine;
+    
+    int* _bInicio;
+    
+    int _iPx;
+    int _iPy;
+    int _iPWidth;
+    int _iPHeight;
+    int _iAvanzoRetrocedio;
+    int _iMapWidth;
+    
+    float _fPauseLeft;
+    float _fPauseRight;
+    
+    bool _bFilosofiaInitialText;
+    bool _bDoorMissText;
+    
+    std::string _sPuerta;
+    
+    MapWorld* _oMap;
+    Resource* _oResource;
+    Player* _oPlayer;
+    Resource* _oPuertas;
+    BarraMision* _oBarraMision;
+    Milliseconds* _oMilliseconds;
+    RoomExit* _oRoomExit;
+    Doors* _oDoors;
+    Mates* _oMates;
+    FilosofiaIntroduction* _oFilosofia;
+    
+    cocos2d::TMXTiledMap* _tileMap;
 };
 
 #endif /* defined(__JuegoTequilero__ViewGame__) */

@@ -13,34 +13,66 @@
 
 #include "cocos2d.h"
 #include "Button.h"
+#include "ViewPause.h"
+#include "PauseInput.h"
+#include "Sounds.h"
+
+
+
 
 class PauseGame : public cocos2d::LayerColor
 {
 private:
     
-    Button* _oBackButton;
-    
-    cocos2d::EventListenerTouchOneByOne* listenerInput;
-    
     void createStartButton( );
-    void inputBegan( cocos2d::EventListenerTouchOneByOne* listenerInput );
-    void inputMoved( cocos2d::EventListenerTouchOneByOne* listenerInput );
-    void inputEnded( cocos2d::EventListenerTouchOneByOne* listenerInput );
     
     void createPauseLabel( );
     void cleanUp( );
     void popPause( );
     
-public:
-    // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    //static cocos2d::Scene* createScene( );
+    void beganTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    bool initializeBeganTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch );
     
-    virtual bool init();
+    void endedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    
+    void movedTouch( cocos2d::EventListenerTouchOneByOne* listenerInput );
+    void doMovedTouch( cocos2d::Point& locationInNode, cocos2d::Touch* touch );
+    
+    void testTopScroll( cocos2d::Point& locationInNode );
+    void testMainScroll( cocos2d::Point& locationInNode );
+    
+public:
+    
+    virtual bool init( );
     
     PauseGame( );
     virtual ~PauseGame( );
     
     CREATE_FUNC( PauseGame );
+    
+private:
+    
+    Button* _oBackButton;
+    cocos2d::EventListenerTouchOneByOne* listenerInput;
+    
+    bool _bExit;
+    bool _bTopScroll;
+    bool _bMainScroll;
+    
+    int _iTopScroll;
+    int _iDeltaTopScroll;
+    
+    int _iMainScroll;
+    int _iDeltaMainScroll;
+    
+    int _iTopScrollHeight;
+    int _iMainScrollHeight;
+    
+    int _iWidth;
+    int _iHeight;
+    
+    ViewPause* _oViewPause;
+    Sounds* _oEffect;
 };
 
 #endif /* defined(__JuegoTequilero__PauseGame__) */

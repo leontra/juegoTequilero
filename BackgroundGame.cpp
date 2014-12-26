@@ -17,7 +17,7 @@ bool BackgroundGame::init ()
     if( ! LayerColor::initWithColor ( Color4B ( 30,  150,  130,  255 ) ) )
         return false;
     
-    cocos2d::Sprite* spriteBackground = Sprite::create ("waterFall1.png");
+    cocos2d::Sprite* spriteBackground = Sprite::create ("CampoBackground.png");
     
     spriteBackground->setAnchorPoint ( Point(0, 0));
     

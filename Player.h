@@ -12,14 +12,14 @@
 #include <iostream>
 
 #include "Input.h"
-
 #include "cocos2d.h"
-
-#include "CollisionsPoints.h"
-
+#include "RegularPlatform.h"
 #include "BoxCollision.h"
-
 #include "CreateAnim.h"
+#include "BreakablePlatform.h"
+#include "HardTopPlatform.h"
+#include "HardBottomPlatform.h"
+#include "Obstacles.h"
 
 //#include "Milliseconds.h"
 
@@ -37,10 +37,13 @@ private:
     int _iPlayerWidth;
     int _iPlayerHeight;
     
+    bool _bOutOfBoundries;
+    
     int _iMap;
     int _iWidthTile;
     int _iHeightTile;
     int _iMapWidth;
+    int _iMapHeight;
     
     int _bFlip;
     
@@ -48,6 +51,7 @@ private:
     
 	int _iFallx;
 	int _iFally;
+    int _iFallAy;
     
     float _fGravedad;
     float _fG;
@@ -69,18 +73,21 @@ private:
     
     int _iMapIndex;
     
-    CollisionsPoints* _oCollisionsPoints;
-    
+    RegularPlatform* _oRegularPlatform;
+    BreakablePlatform* _oBreakablePlatform;
+    HardTopPlatform* _oHardTopPlatform;
+    HardBottomPlatform* _oHardBottomPlatform;
     BoxCollision* _oBoxCollisions;
+    
+    Obstacles* _oObstacles;
     
     Input* _oInput;
     
     CreateAnim* _oCreateAnim;
     
-    vector* _piCollisionPoints;
-    vector* _piTransparentCollisionPoints;
-    
     cocos2d::Sprite* _spritePlayer;
+    
+private:
     
     void pintarPlayer (float dt);
     void input ();
@@ -95,6 +102,7 @@ private:
     void constraintXRight ();
     void constraintY ();
     void checkForCollisions ();
+    void checkForBoundries( );
     void sumGravity ();
     void checkForFlip ();
     
@@ -105,8 +113,8 @@ private:
     
     void updatePlayerSprite (int& posX, int& posY);
     
-    void resetPosition ();
-    void destroyObjects ();
+    void resetPosition( );
+    void destroyObjects( );
     
     void doFlipWith (int& bFlip);
     void setInitScale (std::string sAparicion);
@@ -120,20 +128,25 @@ public:
     
     bool init (cocos2d::TMXTiledMap& _tileMap, float& fGravedad, std::string sPuerta, int& iMap);
     
-    void destroyPlayer ();
-    
+    void destroyPlayer( );
     void getAllValues (int& iX, int& iY, int& iWidth, int& iHeight, bool& bActionTouch, int& iWidthTile);
     
-    int* getPosX ();
+    void setPlayerRoomPosition( const int& _x, const int& _y );
     
+    void getPlayerSize( int& _width, int& _height );
+    
+public:
+    
+    int* getPosX ();
     int* getPosY ();
     
+    float getXMax( );
+    float getYMax( );
+    float getXMin( );
+    float getYMin( );
+    
     Player ();
-    
     ~Player ();
-    
-    //CREATE_FUNC( Player );
-    
 };
 
 #endif /* defined(__JuegoTequilero__Player__) */

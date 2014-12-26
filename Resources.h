@@ -15,32 +15,59 @@
 
 #include "cocos2d.h"
 
+#include "ResourcesBuffer.h"
+#include "Sounds.h"
+
+
 class Resource: public cocos2d::Layer
 {
-private:
-    int _iNRecursos;
-    
-    objectResource* piMapResourcesPoints;
-    
-    void initArray ();
-    
-	objectResource*  initVectorWith(int X, int Y, int width, int height, int type, std::string name);
-    
-	void ResourceType(objectResource* piMRP, int X, int Y, std::string name);
     
 public:
     
-    Resource ();
+    Resource( );
     
-    ~Resource ();
+    ~Resource( );
     
-    void deleteArray ();
+    int& getNRecursos( );
     
-    int& getNRecursos ();
+    void initResourcesRoom( const int& iRoomIndex );
     
-    objectResource* initResources( cocos2d::TMXTiledMap& _tileMap );
+    bool init( );
     
-    bool init ();
+    int testResourcesCollisions( float playerXMax, float playerYMax, float playerXMin, float playerYMin );
+    
+    void resetArrays( );
+    
+    void resetResources( );
+    
+private:
+    
+    void initArray( );
+    
+    void  setResourcesToArray( const int& iRoomIndex );
+    
+    void ResourceType( ObjectResource* piMRP, int X, int Y, std::string name );
+    
+private:
+    
+    ResourcesBuffer* _osResourceBuffer;
+    
+    std::vector< ObjectKey* > _apKeys;
+    std::vector< ObjectBottle* > _apBottles;
+    std::vector< ObjectTool* > _apTools;
+    std::vector< ObjectLogo* > _apLogos;
+    std::vector< ObjectLetter* > _apLetters;
+    
+    int _iNRoomResources;
+    int _iRoomIndex;
+    
+    int _iLastLetterCollected;
+    bool _bLetterCollected;
+    
+    int* _aiResourcesCollected;
+    
+    Sounds* _oEffect;
+    
 };
 
 

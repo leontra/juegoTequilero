@@ -10,163 +10,294 @@
 
 USING_NS_CC;
 
-Resource::Resource (): _iNRecursos (0)
+Resource::Resource( ):   _iNRoomResources( 0 ),
+                                        _iLastLetterCollected( 0 ),
+                                        _bLetterCollected( 0 ),
+                                        _iRoomIndex( 0 )
 {
+   _osResourceBuffer = ResourcesBuffer::GetInstance( );
+    _oEffect = new Sounds();
 }
 
-Resource::~Resource ()
+Resource::~Resource( )
 {
-    deleteArray ();
+    _osResourceBuffer = nullptr;
+    delete _oEffect;
 }
 
-bool Resource::init ()
+bool Resource::init( )
 {
-    if (!Layer::init())
+    if( !Layer::init( ) )
         return 0;
     
     return 1;
 }
 
-objectResource* Resource::initResources (cocos2d::TMXTiledMap& _tileMap)
+void Resource::initResourcesRoom( const int& iRoomIndex )
 {
-    //Obtener los diferentes objetos contenidos en el xml
-    auto tileGroups = _tileMap.getObjectGroups();
-    
     //Obtener la cantidad de recursos por mapa
-    _iNRecursos = 7;
+    _iNRoomResources = _osResourceBuffer->getTotalRoomResources( iRoomIndex );
     
-    int iIndex = 0;
+    _aiResourcesCollected = new int[ _iNRoomResources ];
     
-    this->initArray ();
+    _iRoomIndex = iRoomIndex;
     
-    //Obtener posiciones del player
-    for( auto& objectGroup : tileGroups )
+    //Iniciar arreglo para guardar direcciones de memoria
+    //this->initArray( );
+    
+    this->setResourcesToArray( iRoomIndex );
+}
+
+void Resource::setResourcesToArray( const int& iRoomIndex )
+{
+    int iLetterIndex = 0;
+    for( int i = 0; i < _iNRoomResources; ++i )
     {
-        //Terminar si el objeto no es un recurso
-        if (objectGroup->getGroupName() != "Recurso")
-            continue;
+        ObjectResource object = _osResourceBuffer->getRoomResourcesBuffer( iRoomIndex, i );
         
-        //Obtener objeto
-        auto objects = objectGroup->getObjects();
-        
-        //Revisar por cada propiedad del objeto
-        for (auto& object : objects)
+        if( object.getType( ) == 1 )
         {
-            auto properties = object.asValueMap();
+            ObjectBottle* bottle = object.getObjectBottle( );
+            if( !bottle->getState( ) ) bottle->setState( 1 );
+            _apBottles.push_back( bottle );
             
-			auto name = properties.at("name");
-            
-            auto type = properties.at ("type");
-            
-            auto posX = properties.at ("x");
-            
-            auto posY = properties.at ("y");
-            
-            auto width = properties.at ("width");
-            
-            auto height = properties.at ("height");
-            
-            if (!posX.isNull())
+            if( bottle->getState( ) == 1 )
             {
-				objectResource* orPosResource = this->initVectorWith(posX.asInt(), posY.asInt(), width.asInt(), height.asInt(), type.asInt(), name.asString());
-                
-                piMapResourcesPoints [iIndex] = *orPosResource;
+                bottle->initSprite( );
+                this->addChild( bottle->getSprite( ) );
             }
             
-            ++iIndex;
-            
-        }//For
+        }
         
-    }//For
-    
-    return piMapResourcesPoints;
+        if( object.getType( ) == 2 )
+        {
+            ObjectKey* key = object.getObjectKey( );
+            
+            if( !key->getState( ) ) key->setState( 1 );
+            _apKeys.push_back( key );
+            if( key->getState( ) == 1 )
+            {
+                key->initSprite( );
+                this->addChild( key->getSprite( ) );
+            }
+            
+        }
+        
+        if( object.getType( ) == 3 )
+        {
+            ObjectTool* tool = object.getObjectTool( );
+            
+            if( !tool->getState( ) ) tool->setState( 1 );
+            _apTools.push_back( tool );
+            if( tool->getState( ) == 1 )
+            {
+                tool->initSprite( );
+                this->addChild( tool->getSprite( ) );
+            }
+        }
+        
+        if( object.getType( ) == 4 )
+        {
+            ObjectLetter* letter = object.getObjectLetter( );
+            
+            if( !letter->getState( ) ) letter->setState( 1 );
+            if( letter->getState( ) == 3 )
+            {
+                _bLetterCollected = 1;
+                _iLastLetterCollected = iLetterIndex;
+            }
+            _apLetters.push_back( letter );
+            ++iLetterIndex;
+            if( letter->getState( ) == 1 )
+            {
+                letter->initSprite( );
+                this->addChild( letter->getSprite( ) );
+            }
+        }
+        
+        if( object.getType( ) == 5 )
+        {
+            ObjectLogo* logo = object.getObjectLogo( );
+            
+            if( !logo->getState( ) ) logo->setState( 1 );
+            _apLogos.push_back( logo );
+            if( logo->getState( ) == 1 )
+            {
+                logo->initSprite( );
+                this->addChild( logo->getSprite( ) );
+            }
+            
+        }
+        
+    }
 }
 
-objectResource* Resource::initVectorWith(int X, int Y, int width, int height, int type, std::string name)
+int Resource::testResourcesCollisions( float playerXMax, float playerYMax, float playerXMin, float playerYMin )
 {
-    objectResource* orPosResource = new objectResource ();
+    for( int i = 0; i < _apBottles.size( ); ++i )
+    {
+        //State 1 es el estado de pintado
+        if( _apBottles[ i ]->getState( ) != 1 )
+            continue;
+        
+        if( ( _apBottles[ i ]->getXMax( ) <= playerXMin && _apBottles[ i ]->getYMax( ) <= playerYMin ) && ( _apBottles[ i ]->getXMin( ) >= playerXMax && _apBottles[ i ]->getYMin( ) >= playerYMax ) )
+        {
+            _apBottles[ i ]->setState( 3 );
+            _oEffect->GetEffect("bottle", ".wav");
+            _apBottles[ i ]->deleteSprite( );
+            return _apBottles[ i ]->getUpgrade( );
+        }
+    }
     
-    orPosResource->x = X;
+    for( int i = 0; i < _apLogos.size( ); ++i )
+    {
+        if( _apLogos[ i ]->getState( ) != 1 )
+            continue;
+        
+        if( ( _apLogos[ i ]->getXMax( ) <= playerXMin && _apLogos[ i ]->getYMax( ) <= playerYMin ) && ( _apLogos[ i ]->getXMin( ) >= playerXMax && _apLogos[ i ]->getYMin( ) >= playerYMax ) )
+        {
+            _oEffect->GetEffect("logoflip", ".wav");
+            _apLogos[ i ]->setState( 3 );
+            _apLogos[ i ]->deleteSprite( );
+            _osResourceBuffer->sumLogos( );
+            return _apLogos[ i ]->getUpgrade( );
+        }
+    }
     
-    orPosResource->y = Y;
+    for( int i = 0; i < _apLetters.size( ); ++i )
+    {
+        if( _apLetters[ i ]->getState( ) != 1 )
+            continue;
+        
+        if( ( _apLetters[ i ]->getXMax( ) <= playerXMin && _apLetters[ i ]->getYMax( ) <= playerYMin ) && ( _apLetters[ i ]->getXMin( ) >= playerXMax && _apLetters[ i ]->getYMin( ) >= playerYMax ) )
+        {
+            if( _bLetterCollected )
+            {
+                _apLetters[ _iLastLetterCollected ]->setState( 1 );
+                _apLetters[ _iLastLetterCollected ]->initSprite( );
+                this->addChild( _apLetters[ _iLastLetterCollected ]->getSprite( ) );
+            }
+            _apLetters[ i ]->setState( 3 );
+            this->removeChild( _apLetters[ i ]->getSprite( ) );
+            _oEffect->GetEffect("letras", ".wav");
+            _bLetterCollected = 1;
+            _iLastLetterCollected = i; 
+            
+            return 0;
+        }
+    }
     
-    orPosResource->width = width;
+    for( int i = 0; i < _apKeys.size( ); ++i )
+    {
+        if( _apKeys[ i ]->getState( ) != 1 )
+            continue;
+        
+        if( ( _apKeys[ i ]->getXMax( ) <= playerXMin && _apKeys[ i ]->getYMax( ) <= playerYMin ) && ( _apKeys[ i ]->getXMin( ) >= playerXMax && _apKeys[ i ]->getYMin( ) >= playerYMax ) )
+        {
+            if( _osResourceBuffer->testKeysCollected( ) )
+            {
+                int keyIndex = _osResourceBuffer->respawnLastKey( _iRoomIndex );
+                if( keyIndex >= 0 )
+                {
+                    _apKeys[ keyIndex ]->setState( 1 );
+                    this->addChild( _apLetters[ keyIndex ]->getSprite( ) );
+                }
+            }
+            _oEffect->GetEffect("keys", ".wav");
+            _osResourceBuffer->sumKeysCollectedBy( 1, _apKeys[ i ]->getHash( ) );
+            _apKeys[ i ]->setState( 3 );
+            _apKeys[ i ]->deleteSprite( );
+            return 0;
+        }
+    }
     
-    orPosResource->height = height;
+    for( int i = 0; i < _apTools.size( ); ++i )
+    {
+        if( _apTools[ i ]->getState( ) != 1 )
+            continue;
+        
+        if( ( _apTools[ i ]->getXMax( ) <= playerXMin && _apTools[ i ]->getYMax( ) <= playerYMin ) && ( _apTools[ i ]->getXMin( ) >= playerXMax && _apTools[ i ]->getYMin( ) >= playerYMax ) )
+        {
+            if( _osResourceBuffer->testToolsCollected( ) )
+            {
+                int toolIndex = _osResourceBuffer->respawnLastTool( _iRoomIndex );
+                if( toolIndex >= 0 )
+                {
+                    _apTools[ toolIndex ]->setState( 1 );
+                    this->addChild( _apTools[ toolIndex ]->getSprite( ) );
+                }
+            }
+            _oEffect->GetEffect("toolsound", ".wav");
+            _apTools[ i ]->setState( 3 );
+            _apTools[ i ]->deleteSprite( );
+            return 0;
+        }
+    }
     
-    orPosResource->iActivo = 1;
-    
-	orPosResource->iType = type;
-    
-	orPosResource->name = name;
-	this->ResourceType(orPosResource, X, Y, name);
-    
-    return orPosResource;
-}
-
-void Resource::ResourceType(objectResource* piMRP, int X, int Y, std::string name){
-    
-	if (name == ("Botella"))
-		piMRP->spriteResource = cocos2d::Sprite::create("BotellaTequila.png");
-    
-	if (name == ("Llave" ))
-		piMRP->spriteResource = cocos2d::Sprite::create("Llave.png");
-    
-	if (name == ("PuertaEntrada"))
-		piMRP->spriteResource = cocos2d::Sprite::create("puertac.png");
-    
-	if (name == ("PuertaSalida"))
-		piMRP->spriteResource = cocos2d::Sprite::create("PuertaS.png");
-    
-	if (name == ("Picos"))
-		piMRP->spriteResource = cocos2d::Sprite::create("picos.png");
-    
-	if (name == ("Personaje"))
-		piMRP->spriteResource = cocos2d::Sprite::create("Personaje.png");
-    
-	if (name == ("Nube"))
-		piMRP->spriteResource = cocos2d::Sprite::create("nube.png");
-    
-	if (name == ("Logo1"))
-		piMRP->spriteResource = cocos2d::Sprite::create("logo1.png");
-    
-	if (name == ("Logo2"))
-		piMRP->spriteResource = cocos2d::Sprite::create("logo2.png");
-    
-	if (name == ("Logo3"))
-		piMRP->spriteResource = cocos2d::Sprite::create("logo3.png");
-    
-	if (name == ("Logo4"))
-		piMRP->spriteResource = cocos2d::Sprite::create("logo4.png");
-    
-	piMRP->spriteResource->setAnchorPoint(Point(0, 0));
-    
-	piMRP->spriteResource->setPosition(Point(X, Y));
-    
-	addChild(piMRP->spriteResource);
-    
-}
-
-void Resource::initArray ()
-{
-    this->piMapResourcesPoints = new objectResource [7] ();
+    return 0;
 }
 
 int& Resource::getNRecursos ()
 {
-    return _iNRecursos;
+    return _iNRoomResources;
 }
 
-void Resource::deleteArray ()
+void Resource::resetArrays( )
 {
-    delete [] piMapResourcesPoints;
+    _iNRoomResources = 0;
+    _bLetterCollected = 0;
+    _iLastLetterCollected = 0;
     
-    _iNRecursos = 0;
+    std::vector< ObjectBottle* >::iterator itBottles;
+    for( itBottles = _apBottles.begin( ); itBottles != _apBottles.end( ); ++itBottles)
+        (*itBottles)->unPaintSprite( );
     
-    piMapResourcesPoints = 0;
+    std::vector< ObjectLetter* >::iterator itLetters;
+    for( itLetters = _apLetters.begin( ); itLetters != _apLetters.end( ); ++itLetters)
+        (*itLetters)->unPaintSprite( );
     
-    this->removeAllChildren ();
+    std::vector< ObjectLogo* >::iterator itLogos;
+    for( itLogos = _apLogos.begin( ); itLogos != _apLogos.end( ); ++itLogos)
+        (*itLogos)->unPaintSprite( );
     
-    this->removeFromParent ();
+    std::vector< ObjectTool* >::iterator itTools;
+    for( itTools = _apTools.begin( ); itTools != _apTools.end( ); ++itTools)
+        (*itTools)->unPaintSprite( );
+    
+    std::vector< ObjectKey* >::iterator itKeys;
+    for( itKeys = _apKeys.begin( ); itKeys != _apKeys.end( ); ++itKeys)
+        (*itKeys)->unPaintSprite( );
+        
+    _apLetters.clear( );
+    _apBottles.clear( );
+    _apLogos.clear( );
+    _apTools.clear( );
+    _apKeys.clear( );
+    
+    this->removeAllChildren( );
+    this->removeFromParent( );
+}
+
+void Resource::resetResources( )
+{
+    std::vector< ObjectBottle* >::iterator itBottles;
+    for( itBottles = _apBottles.begin( ); itBottles != _apBottles.end( ); ++itBottles)
+        (*itBottles)->resetResourceForRoom( );
+    
+    std::vector< ObjectLetter* >::iterator itLetters;
+    for( itLetters = _apLetters.begin( ); itLetters != _apLetters.end( ); ++itLetters)
+        (*itLetters)->resetResourceForRoom( );
+    
+    std::vector< ObjectLogo* >::iterator itLogos;
+    for( itLogos = _apLogos.begin( ); itLogos != _apLogos.end( ); ++itLogos)
+        (*itLogos)->resetResourceForRoom( );
+    
+    std::vector< ObjectTool* >::iterator itTools;
+    for( itTools = _apTools.begin( ); itTools != _apTools.end( ); ++itTools)
+        (*itTools)->resetResourceForRoom( );
+    
+    std::vector< ObjectKey* >::iterator itKeys;
+    for( itKeys = _apKeys.begin( ); itKeys != _apKeys.end( ); ++itKeys)
+        (*itKeys)->resetResourceForRoom( );
 }
 

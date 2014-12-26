@@ -24,6 +24,8 @@ private:
     
     float _iMillisCount;
     
+    int _iMillisPlatformDuration;
+    
     bool _bSeconds;
     
     float fGetMilliCount();
@@ -38,11 +40,13 @@ public:
     
     void startCounter ();
     
-    float& getSecsCounter ();
+    float& getSecsCounter( );
     
     int getMillisInterval (int iTimeInterval);
     
     int getEveryMillis ();
+    
+    void setPlatformDuration( const int& iDuration );
     
     Milliseconds ();
     

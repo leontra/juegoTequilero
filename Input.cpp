@@ -22,7 +22,7 @@ static bool _bJump = 0;
 
 
 
-Input::Input (): fDivisionHeight (0),
+Input::Input( ): fDivisionHeight (0),
                   fDivisionWidth (0),
                   fWidth (0),
                   _iButtonHeight (0),
@@ -39,7 +39,6 @@ Input::~Input ()
 {
 }
 
-
 bool Input::init ()
 {
     if (!Layer::init())
@@ -55,7 +54,7 @@ bool Input::init ()
     return 1;
 } // bool init
 
-void Input::initInput (cocos2d::Size visibleSize)
+void Input::initInput( cocos2d::Size visibleSize )
 {
     //Inicializar las variables de la clase
     this->initVariables (visibleSize);
@@ -71,9 +70,9 @@ void Input::initInput (cocos2d::Size visibleSize)
     auto listenerInputPlayer = this->getInputListener( );
     
     //Inicializar los diferentes tipos de eventos del input
-    this->beganTouch (listenerInputPlayer);
-    this->movedTouch (listenerInputPlayer);
-    this->endedTouch (listenerInputPlayer);
+    this->beganTouch( listenerInputPlayer );
+    this->movedTouch( listenerInputPlayer );
+    this->endedTouch( listenerInputPlayer );
     this->cancelledTouch( listenerInputPlayer );
     
     //Agregar el input a los eventos del juego
@@ -97,7 +96,7 @@ void Input::initButtonsSprites (int& iButtonWidthPadding, int& iButtonHeightPadd
 
 Sprite* Input::getLeftButton (int& iButtonWidthPadding, int& iButtonHeightPadding)
 {
-    auto sButtonLeft = Sprite::create ("button.png");
+    auto sButtonLeft = Sprite::create ("Button_00.png");
     sButtonLeft->setOpacity (150);
     sButtonLeft->setAnchorPoint (Point (0, 0));
     sButtonLeft->setContentSize (Size (200, 200));
@@ -108,7 +107,7 @@ Sprite* Input::getLeftButton (int& iButtonWidthPadding, int& iButtonHeightPaddin
 
 Sprite* Input::getRightButton (int& iButtonWidthPadding, int& iButtonHeightPadding)
 {
-    auto sButtonRight = Sprite::create ("button.png");
+    auto sButtonRight = Sprite::create ("Button_00.png");
     sButtonRight->setOpacity (150);
     sButtonRight->setAnchorPoint (Point (0, 0));
     sButtonRight->setPosition (fWidth - sButtonRight->getContentSize().width - iButtonWidthPadding,  iButtonHeightPadding);
@@ -116,22 +115,22 @@ Sprite* Input::getRightButton (int& iButtonWidthPadding, int& iButtonHeightPaddi
     return sButtonRight;
 }
 
-EventListenerTouchOneByOne* Input::getInputListener ()
+EventListenerTouchOneByOne* Input::getInputListener( )
 {
-    auto listenerInputPlayer = EventListenerTouchOneByOne::create ();
+    auto listenerInputPlayer = EventListenerTouchOneByOne::create( );
     
-    listenerInputPlayer->setSwallowTouches (0);
+    listenerInputPlayer->setSwallowTouches( 0 );
     
     return listenerInputPlayer;
 }
 
-void Input::beganTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
+void Input::beganTouch( cocos2d::EventListenerTouchOneByOne* listenerInput )
 {
-    listenerInput->onTouchBegan = [&] (cocos2d::Touch* touch, cocos2d::Event* event)
+    listenerInput->onTouchBegan = [ & ]( cocos2d::Touch* touch, cocos2d::Event* event )
     {
-        Point locationInNode = touch->getLocation ();
+        Point locationInNode = touch->getLocation( );
         
-        return initilizeBeganTouch (locationInNode, touch);
+        return initilizeBeganTouch( locationInNode, touch );
         
     }; // onTouchBegan
 }
@@ -142,6 +141,7 @@ bool Input::initilizeBeganTouch (cocos2d::Point& locationInNode, cocos2d::Touch*
     Rect rectLeft = Rect ( 0, 0, _iButtonWidth, _iButtonHeight);
     Rect rectRight = Rect (fWidth - _iButtonWidth, 0, _iButtonWidth, _iButtonHeight);
     Rect rectJump = Rect( 0, 0, fWidth, fDivisionHeight * 2);
+    //Rect rectAction = Rect( 0, 0, fWidth, fDivisionHeight * 2);
     
     //std::cout << "Input Touch Began" << std::endl;
     
@@ -187,6 +187,7 @@ void Input::endedTouch (cocos2d::EventListenerTouchOneByOne* listenerInput)
         {
             _bLastAction = 0;
             _bJump = 0;
+            _bAction = 0;
         }
     }; //onTouchEnded
 }
@@ -257,6 +258,11 @@ void Input::testJump (cocos2d::Point& locationInNode)
         _bLastAction = 1;
         _bJump = 1;
     }
+    if (locationInNode.y < _iJumpTouch - 40)
+    {
+        _bLastAction = 1;
+        _bAction = 1;
+    }
 }
 
 void Input::checkForTouchMoved (bool& bTouch, bool& bLastTouch)
@@ -268,28 +274,33 @@ void Input::checkForTouchMoved (bool& bTouch, bool& bLastTouch)
     }
 }
 
-bool Input::touchLeft ()
+bool Input::touchLeft( )
 {
     return _bLeft;
 } // bool touchLeft
 
 
-bool Input::touchRight ()
+bool Input::touchRight( )
 {
     return _bRight;
     
 } // bool touchRight
 
 
-bool Input::touchAction ()
+bool Input::touchAction( )
 {
+    if( _bAction )
+    {
+        _bAction = 0;
+        return 1;
+    }
     return _bAction;
 } // bool touchAction
 
 
-bool Input::touchJump ()
+bool Input::touchJump( )
 {
-    if (_bJump)
+    if( _bJump )
     {
         _bJump = 0;
         return 1;

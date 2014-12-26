@@ -14,8 +14,16 @@ struct _Vector
     int x;
     int y;
     int iActivo;
-    int iToB;
-    int iPlayer;
+    
+    _Vector( ):   x( 0 ),
+                        y( 0 ),
+                        iActivo( 0 )
+    { }
+    
+    _Vector( const int& x, const int& y, int& iActivo ):    x( x ),
+                                                                y( y ),
+                                                                iActivo( iActivo )
+    { }
 };
 
 typedef _Vector vector;

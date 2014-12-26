@@ -26,9 +26,9 @@ cocos2d::EventListenerTouchOneByOne* Button::setNewInputListener( const float& x
     
     _rectButton = Rect( x, y, width, height);
     
-    auto spriteButton = Sprite::create( "button.png" );
-    spriteButton->setOpacity (50);
-    spriteButton->setAnchorPoint (Point (0, 0));
+    auto spriteButton = Sprite::create( "Button_00.png" );
+    spriteButton->setOpacity( 90 );
+    spriteButton->setAnchorPoint( Point( 0.0, 0.0 ) );
     spriteButton->setPosition( x, y );
     
     layer->addChild( spriteButton );
